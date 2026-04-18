@@ -17,7 +17,7 @@ helm dependency build ../charts/backoffice-ui
 helm upgrade --install backoffice-ui ../charts/backoffice-ui \
 --namespace yas --create-namespace
 
-sleep 60
+sleep 20
 
 helm dependency build ../charts/storefront-bff
 helm upgrade --install storefront-bff ../charts/storefront-bff \
@@ -28,7 +28,7 @@ helm dependency build ../charts/storefront-ui
 helm upgrade --install storefront-ui ../charts/storefront-ui \
 --namespace yas --create-namespace
 
-sleep 60
+sleep 20
 
 helm upgrade --install swagger-ui ../charts/swagger-ui \
 --namespace yas --create-namespace \
@@ -36,10 +36,10 @@ helm upgrade --install swagger-ui ../charts/swagger-ui \
 
 sleep 20
 
-for chart in {"cart","customer","inventory","location","media","order","payment","payment-paypal","product","promotion","rating","search","tax","recommendation","webhook","sampledata"} ; do
+for chart in {"cart","customer","inventory","location","media","order","payment","product","promotion","rating","search","tax","recommendation","webhook","sampledata"} ; do
     helm dependency build ../charts/"$chart"
     helm upgrade --install "$chart" ../charts/"$chart" \
     --namespace yas --create-namespace \
     --set backend.ingress.host="api.$DOMAIN"
-    sleep 60
+    sleep 20
 done

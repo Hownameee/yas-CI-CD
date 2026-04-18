@@ -1,6 +1,13 @@
 # Deploy yas k8s
 
-## 1. Cài đặt Ingress NGINX Controller
+## 0. Start minikube
+
+```bash
+minikube start --driver=docker --disk-size='80000mb' --memory='18g' --cpus='7' --kubernetes-version=v1.29.0
+minikube addons enable ingress
+```
+
+## 1. Install Ingress NGINX Controller (K8S Cluster)
 
 ```bash
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
@@ -13,7 +20,7 @@ helm upgrade --install ingress-nginx ingress-nginx/ingress-nginx \
   --set controller.service.nodePorts.https=30443
 ```
 
-## 2. Triển khai Hệ thống YAS và Infrastructure
+## 2. Deploy YAS System and Infrastructure
 
 ```bash
 cd k8s/deploy/
@@ -24,7 +31,7 @@ cd k8s/deploy/
 ./deploy-yas-applications.sh
 ```
 
-## 3. Cấu hình Local DNS (Mapping Domain)
+## 3. Configure Local DNS (Mapping Domain)
 
 ```bash
 # Kiểm tra IP của Node
@@ -37,18 +44,18 @@ sudo nano /etc/hosts
 *Thêm nội dung sau vào file `/etc/hosts`:*
 
 ```text
-192.168.56.101 pgoperator.yas.local.com
-192.168.56.101 pgadmin.yas.local.com
-192.168.56.101 akhq.yas.local.com
-192.168.56.101 kibana.yas.local.com
-192.168.56.101 identity.yas.local.com
-192.168.56.101 backoffice.yas.local.com
-192.168.56.101 storefront.yas.local.com
-192.168.56.101 grafana.yas.local.com
-192.168.56.101 api.yas.local.com
+192.168.49.2 pgoperator.yas.local.com
+192.168.49.2 pgadmin.yas.local.com
+192.168.49.2 akhq.yas.local.com
+192.168.49.2 kibana.yas.local.com
+192.168.49.2 identity.yas.local.com
+192.168.49.2 backoffice.yas.local.com
+192.168.49.2 storefront.yas.local.com
+192.168.49.2 grafana.yas.local.com
+192.168.49.2 api.yas.local.com
 ```
 
-### 4. Gỡ bỏ Hệ thống (Teardown & Cleanup)
+## 4. Teardown & Cleanup
 
 ```bash
 # 1. Xóa các ứng dụng bằng Helm một cách an toàn (tránh lỗi nếu namespace trống)
