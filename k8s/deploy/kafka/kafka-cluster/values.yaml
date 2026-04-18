@@ -7,5 +7,5 @@ postgresql:
   username: yasadminuser
   password: admin
 debeziumConnect:
-  image: ghcr.io/nashtech-garage/debezium-connect-postgresql:latest
+  image: melyen/my-debezium-postgres:latest
   buildImage: false #Enabled when build debezium-connect-postgresql image
