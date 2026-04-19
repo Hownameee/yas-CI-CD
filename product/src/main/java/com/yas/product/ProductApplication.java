@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class ProductApplication {
 
     public static void main(String[] args) {
+        System.out.println("123");
         SpringApplication.run(ProductApplication.class, args);
     }
 
