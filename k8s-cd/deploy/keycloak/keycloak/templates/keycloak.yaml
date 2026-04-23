@@ -21,7 +21,7 @@ spec:
     httpEnabled: true
     httpPort: 8080
   hostname:
-    hostname: http://{{ .Values.hostname }}
+    hostname: {{ .Values.hostname }}
     backchannelDynamic: true
     strict: false
   proxy:
