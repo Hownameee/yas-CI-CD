@@ -9,13 +9,28 @@ read -rd '' DOMAIN \
 
 NAMESPACE="${YAS_NAMESPACE:-yas}"
 
+# Construct dynamic domains
+if [ -n "$ENV_TAG" ]; then
+  IDENTITY_HOST="identity-$ENV_TAG.$DOMAIN"
+  BACKOFFICE_HOST="backoffice-$ENV_TAG.$DOMAIN"
+  STOREFRONT_HOST="storefront-$ENV_TAG.$DOMAIN"
+  API_HOST="api-$ENV_TAG.$DOMAIN"
+else
+  IDENTITY_HOST="identity.$DOMAIN"
+  BACKOFFICE_HOST="backoffice.$DOMAIN"
+  STOREFRONT_HOST="storefront.$DOMAIN"
+  API_HOST="api.$DOMAIN"
+fi
+
 # Create namespace yas if not exists
 kubectl create namespace "$NAMESPACE" || true
 
 echo ">>> Deploying YAS Configuration (including Reloader)..."
 helm dependency build ../charts/yas-configuration
 helm upgrade --install yas-configuration ../charts/yas-configuration \
---namespace "$NAMESPACE"
+--namespace "$NAMESPACE" \
+--set global.domain="$DOMAIN" \
+--set global.envTag="$ENV_TAG"
 
 sleep 10
 
@@ -23,11 +38,16 @@ echo ">>> Deploying Backoffice..."
 helm dependency build ../charts/backoffice-bff
 helm upgrade --install backoffice-bff ../charts/backoffice-bff \
 --namespace "$NAMESPACE" \
---set backend.ingress.host="backoffice.$DOMAIN"
+--set backend.ingress.host="$BACKOFFICE_HOST" \
+--set global.domain="$DOMAIN" \
+--set global.envTag="$ENV_TAG"
 
 helm dependency build ../charts/backoffice-ui
 helm upgrade --install backoffice-ui ../charts/backoffice-ui \
---namespace "$NAMESPACE"
+--namespace "$NAMESPACE" \
+--set ingress.host="$BACKOFFICE_HOST" \
+--set ui.extraEnvs[0].name=API_BASE_PATH \
+--set ui.extraEnvs[0].value="http://$BACKOFFICE_HOST/api"
 
 sleep 10
 
@@ -35,18 +55,23 @@ echo ">>> Deploying Storefront..."
 helm dependency build ../charts/storefront-bff
 helm upgrade --install storefront-bff ../charts/storefront-bff \
 --namespace "$NAMESPACE" \
---set backend.ingress.host="storefront.$DOMAIN"
+--set backend.ingress.host="$STOREFRONT_HOST" \
+--set global.domain="$DOMAIN" \
+--set global.envTag="$ENV_TAG"
 
 helm dependency build ../charts/storefront-ui
 helm upgrade --install storefront-ui ../charts/storefront-ui \
---namespace "$NAMESPACE"
+--namespace "$NAMESPACE" \
+--set ingress.host="$STOREFRONT_HOST" \
+--set ui.extraEnvs[0].name=API_BASE_PATH \
+--set ui.extraEnvs[0].value="http://$STOREFRONT_HOST/api"
 
 sleep 10
 
 echo ">>> Deploying Swagger UI..."
 helm upgrade --install swagger-ui ../charts/swagger-ui \
 --namespace "$NAMESPACE" \
---set ingress.host="api.$DOMAIN"
+--set ingress.host="$API_HOST"
 
 sleep 10
 
@@ -55,8 +80,10 @@ for chart in {"cart","customer","inventory","location","media","order","payment"
     helm dependency build ../charts/"$chart"
     helm upgrade --install "$chart" ../charts/"$chart" \
     --namespace "$NAMESPACE" \
-    --set backend.ingress.host="api.$DOMAIN"
+    --set backend.ingress.host="$API_HOST" \
+    --set global.domain="$DOMAIN" \
+    --set global.envTag="$ENV_TAG"
     sleep 10
 done
 
-echo ">>> Xong Giai đoạn 2.2: Tất cả Microservices và UI đã được cài vào namespace '$NAMESPACE'."
+echo ">>> Xong Giai đoạn 2.2: Tất cả Microservices và UI đã được cài vào namespace '$NAMESPACE' với domain prefix '$ENV_TAG'."

@@ -25,7 +25,8 @@ pipeline {
 
     environment {
         DOCKER_REGISTRY = 'hownamee'
-        NS_PREFIX = "dev-${env.BUILD_ID}"
+        ENV_TAG = "dev-${env.BUILD_ID}"
+        YAS_NAMESPACE = "yas-${env.BUILD_ID}"
     }
 
     stages {
@@ -41,40 +42,19 @@ pipeline {
         stage('Initialize') {
             steps {
                 script {
-                    echo "Adding Helm repositories..."
-                    sh """
-                        helm repo add stakater https://stakater.github.io/stakater-charts
-                        helm repo add postgres-operator-charts https://opensource.zalando.com/postgres-operator/charts/postgres-operator
-                        helm repo add strimzi https://strimzi.io/charts/
-                        helm repo add akhq https://akhq.io/
-                        helm repo add elastic https://helm.elastic.co
-                        helm repo add jetstack https://charts.jetstack.io
-                        helm repo add grafana https://grafana.github.io/helm-charts
-                        helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-                        helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-                        helm repo update
-                    """
-
+                    echo "Initializing Deployment for ${env.YAS_NAMESPACE}..."
+                    
                     def domainOutput = sh(script: "yq -r '.domain' k8s-cd/deploy/cluster-config.yaml", returnStdout: true).trim()
-                    if (domainOutput == '__DOMAIN__' || !domainOutput) {
+                    if (domainOutput == '__DOMAIN__' || !domainOutput || domainOutput == 'null') {
                         domainOutput = 'yas.local.com'
                     }
-                    
                     env.DOMAIN = domainOutput
                     
                     def nodeIp = sh(script: "kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type==\"InternalIP\")].address}'", returnStdout: true).trim()
+                    if (!nodeIp) {
+                        nodeIp = sh(script: "minikube ip", returnStdout: true).trim()
+                    }
                     env.NODE_IP = nodeIp
-                }
-            }
-        }
-
-        stage('Prepare Deployments') {
-            steps {
-                script {
-                    echo "Injecting build prefix ${env.NS_PREFIX} into all configuration files..."
-                    sh """
-                        find k8s-cd -type f \\( -name "*.yaml" -o -name "*.template.yaml" \\) -exec sed -i "s/__NS_PREFIX__/${env.NS_PREFIX}/g" {} +
-                    """
                 }
             }
         }
@@ -82,29 +62,29 @@ pipeline {
         stage('Deploy Infrastructure') {
             steps {
                 script {
-                    echo "Deploying Infrastructure with prefix ${env.NS_PREFIX}..."
+                    echo "Stage 1 & 2: Setting up operators and data layer..."
                     sh """
-                        export NS_PREFIX=${env.NS_PREFIX}
                         cd k8s-cd/deploy
-                        ./setup-cluster.sh
-                        ./setup-redis.sh
-                        ./setup-keycloak.sh
+                        ./01-setup-operators.sh
+                        
+                        export ENV_TAG=${env.ENV_TAG}
+                        export YAS_NAMESPACE=${env.YAS_NAMESPACE}
+                        ./02-setup-data-layer.sh
                     """
-                    
-                    echo "Waiting for core infrastructure to be ready..."
-                    sleep(time: 30, unit: 'SECONDS')
                 }
             }
         }
 
-        stage('Deploy Configuration') {
+        stage('Deploy yas-configuration') {
             steps {
                 script {
-                    echo "Deploying yas-configuration with prefix ${env.NS_PREFIX}..."
                     sh """
-                        export NS_PREFIX=${env.NS_PREFIX}
-                        cd k8s-cd/deploy
-                        ./deploy-yas-configuration.sh
+                        cd k8s-cd/charts/yas-configuration
+                        helm dependency build .
+                        helm upgrade --install yas-configuration . \
+                            --namespace ${env.YAS_NAMESPACE} \
+                            --set global.domain=${env.DOMAIN} \
+                            --set global.envTag=${env.ENV_TAG}
                     """
                 }
             }
@@ -113,55 +93,68 @@ pipeline {
         stage('Deploy Applications') {
             steps {
                 script {
-                    def deployService = { serviceName, isUi, customArgs ->
+                    def deployService = { serviceName, isUi, extraArgs ->
                         def paramName = serviceName.replace('-', '_')
                         def branchName = params."${paramName}" ?: 'main'
-                        
                         def tag = 'latest'
 
                         if (branchName != 'main' && serviceName != 'swagger-ui') {
-                            echo "Fetching latest commit ID for branch ${branchName} of service ${serviceName}"
-                            tag = sh(script: "git ls-remote origin ${branchName} | cut -f1", returnStdout: true).trim()
-                            if (!tag) {
-                                error "Could not find branch ${branchName} on origin"
-                            }
+                            echo "Fetching tag for ${serviceName} branch ${branchName}"
+                            tag = sh(script: "git ls-remote https://github.com/Hownameee/yas.git ${branchName} | cut -f1", returnStdout: true).trim()
                         }
 
-                        def chartPath = "k8s-cd/charts/${serviceName}"
+                        def hostPrefix = serviceName.contains('swagger') ? 'api' : serviceName.replace('-bff', '').replace('-ui', '')
+                        def host = "${hostPrefix}-${env.ENV_TAG}.${env.DOMAIN}"
+                        
                         def imageTagKey = isUi ? 'ui.image.tag' : 'backend.image.tag'
-                        def tagArg = (serviceName == 'swagger-ui') ? "" : "--set ${imageTagKey}=${tag}"
-
-                        echo "Deploying ${serviceName} (Branch: ${branchName} -> Tag: ${tag})..."
-                        sh """
-                            cd ${chartPath}
+                        def ingressHostKey = isUi ? 'ingress.host' : 'backend.ingress.host'
+                        
+                        def helmCmd = """
+                            cd k8s-cd/charts/${serviceName}
                             helm dependency build .
-                            helm upgrade --install ${env.NS_PREFIX}-${serviceName} . \
-                                --namespace ${env.NS_PREFIX}-yas --create-namespace \
-                                ${tagArg} \
-                                ${customArgs}
+                            helm upgrade --install ${serviceName} . \
+                                --namespace ${env.YAS_NAMESPACE} \
+                                --set ${imageTagKey}=${tag} \
+                                --set ${ingressHostKey}=${host} \
+                                --set global.domain=${env.DOMAIN} \
+                                --set global.envTag=${env.ENV_TAG} \
+                                ${extraArgs}
                         """
+                        sh helmCmd
                     }
 
-                    deployService('backoffice-bff', false, "--set backend.ingress.host=\"backoffice.${env.DOMAIN}\"")
-                    deployService('backoffice-ui', true, "")
-                    sleep(time: 20, unit: 'SECONDS')
+                    // Deploy BFFs and UIs
+                    deployService('backoffice-bff', false, "")
+                    deployService('backoffice-ui', true, "--set ui.extraEnvs[0].name=API_BASE_PATH --set ui.extraEnvs[0].value=http://backoffice-${env.ENV_TAG}.${env.DOMAIN}/api")
+                    
+                    deployService('storefront-bff', false, "")
+                    deployService('storefront-ui', true, "--set ui.extraEnvs[0].name=API_BASE_PATH --set ui.extraEnvs[0].value=http://storefront-${env.ENV_TAG}.${env.DOMAIN}/api")
+                    
+                    deployService('swagger-ui', false, "")
 
-                    deployService('storefront-bff', false, "--set backend.ingress.host=\"storefront.${env.DOMAIN}\"")
-                    deployService('storefront-ui', true, "")
-                    sleep(time: 20, unit: 'SECONDS')
+                    // Deploy Microservices
+                    def services = ["cart", "customer", "inventory", "location", "media", "order", "payment", "product", "promotion", "rating", "search", "tax", "recommendation", "webhook", "sampledata"]
+                    for (svc in services) {
+                        deployService(svc, false, "")
+                        sleep(5)
+                    }
+                }
+            }
+        }
 
-                    deployService('swagger-ui', false, "--set ingress.host=\"api.${env.DOMAIN}\"")
-                    sleep(time: 20, unit: 'SECONDS')
-
-                    def backendCharts = [
-                        "cart", "customer", "inventory", "location", "media", "order",
-                        "payment", "product", "promotion", "rating", "search", "tax",
-                        "recommendation", "webhook", "sampledata"
-                    ]
-
-                    for (chart in backendCharts) {
-                        deployService(chart, false, "--set backend.ingress.host=\"api.${env.DOMAIN}\"")
-                        sleep(time: 20, unit: 'SECONDS')
+        stage('Patch CoreDNS') {
+            steps {
+                script {
+                    def ingressIp = sh(script: "kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
+                    if (ingressIp) {
+                        sh """
+                            kubectl get cm coredns -n kube-system -o jsonpath='{.data.Corefile}' > Corefile
+                            DOMAIN_SUFFIX="-${env.ENV_TAG}.${env.DOMAIN}"
+                            # Add dynamic domains to hosts block
+                            sed -i "/hosts {/a \\           ${ingressIp} identity\${DOMAIN_SUFFIX} backoffice\${DOMAIN_SUFFIX} storefront\${DOMAIN_SUFFIX} api\${DOMAIN_SUFFIX}" Corefile
+                            kubectl create configmap coredns -n kube-system --from-file=Corefile -o yaml --dry-run=client | kubectl apply -f -
+                            kubectl rollout restart deployment coredns -n kube-system
+                        """
                     }
                 }
             }
@@ -170,25 +163,21 @@ pipeline {
         stage('Access Information') {
             steps {
                 script {
+                    def suffix = "-${env.ENV_TAG}.${env.DOMAIN}"
                     echo "=========================================================="
                     echo "DEPLOYMENT COMPLETE - BUILD #${env.BUILD_ID}"
                     echo "=========================================================="
-                    echo "Worker Node IP: ${env.NODE_IP}"
-                    echo "Base Domain for this build: ${env.DOMAIN}"
+                    echo "IP: ${env.NODE_IP}"
                     echo "----------------------------------------------------------"
-                    echo "Please copy and paste the following entries to your /etc/hosts file:"
-                    echo "----------------------------------------------------------"
-                    
-                    echo """${env.NODE_IP} pgadmin.${env.DOMAIN}
-${env.NODE_IP} akhq.${env.DOMAIN}
-${env.NODE_IP} kibana.${env.DOMAIN}
-${env.NODE_IP} identity.${env.DOMAIN}
-${env.NODE_IP} backoffice.${env.DOMAIN}
-${env.NODE_IP} storefront.${env.DOMAIN}
-${env.NODE_IP} grafana.${env.DOMAIN}
-${env.NODE_IP} api.${env.DOMAIN}
-                        """.trim()
-                    
+                    echo "Copy to /etc/hosts:"
+                    echo "${env.NODE_IP} identity${suffix}"
+                    echo "${env.NODE_IP} backoffice${suffix}"
+                    echo "${env.NODE_IP} storefront${suffix}"
+                    echo "${env.NODE_IP} api${suffix}"
+                    echo "${env.NODE_IP} pgadmin${suffix}"
+                    echo "${env.NODE_IP} akhq${suffix}"
+                    echo "${env.NODE_IP} kibana${suffix}"
+                    echo "${env.NODE_IP} grafana.${env.DOMAIN}"
                     echo "=========================================================="
                 }
             }

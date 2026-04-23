@@ -17,6 +17,25 @@ KEYCLOAK_BACKOFFICE_REDIRECT_URL KEYCLOAK_STOREFRONT_REDIRECT_URL \
 
 NAMESPACE="${YAS_NAMESPACE:-yas}"
 
+# Construct dynamic domains
+if [ -n "$ENV_TAG" ]; then
+  IDENTITY_HOST="identity-$ENV_TAG.$DOMAIN"
+  PGADMIN_HOST="pgadmin-$ENV_TAG.$DOMAIN"
+  AKHQ_HOST="akhq-$ENV_TAG.$DOMAIN"
+  KIBANA_HOST="kibana-$ENV_TAG.$DOMAIN"
+  BACKOFFICE_REDIRECT_URL="http://backoffice-$ENV_TAG.$DOMAIN"
+  STOREFRONT_REDIRECT_URL="http://storefront-$ENV_TAG.$DOMAIN"
+  API_REDIRECT_URL="http://api-$ENV_TAG.$DOMAIN"
+else
+  IDENTITY_HOST="identity.$DOMAIN"
+  PGADMIN_HOST="pgadmin.$DOMAIN"
+  AKHQ_HOST="akhq.$DOMAIN"
+  KIBANA_HOST="kibana.$DOMAIN"
+  BACKOFFICE_REDIRECT_URL="$KEYCLOAK_BACKOFFICE_REDIRECT_URL"
+  STOREFRONT_REDIRECT_URL="$KEYCLOAK_STOREFRONT_REDIRECT_URL"
+  API_REDIRECT_URL="http://api.$DOMAIN"
+fi
+
 # Create yas namespace if not exists
 kubectl create namespace "$NAMESPACE" || true
 
@@ -28,7 +47,7 @@ helm upgrade --install postgres ./postgres/postgresql \
 --set password="$POSTGRESQL_PASSWORD"
 
 # Install pgadmin
-pg_admin_hostname="pgadmin.$DOMAIN" yq -i '.hostname=env(pg_admin_hostname)' ./postgres/pgadmin/values.yaml
+pg_admin_hostname="$PGADMIN_HOST" yq -i '.hostname=env(pg_admin_hostname)' ./postgres/pgadmin/values.yaml
 helm upgrade --install pgadmin ./postgres/pgadmin \
 --namespace "$NAMESPACE"
 
@@ -45,7 +64,7 @@ helm upgrade --install kafka-cluster ./kafka/kafka-cluster \
 --set postgresql.password="$POSTGRESQL_PASSWORD"
 
 # Install akhq
-akhq_hostname="akhq.$DOMAIN" yq -i '.hostname=env(akhq_hostname)' ./kafka/akhq.values.yaml
+akhq_hostname="$AKHQ_HOST" yq -i '.hostname=env(akhq_hostname)' ./kafka/akhq.values.yaml
 helm upgrade --install akhq akhq/akhq \
 --namespace "$NAMESPACE" \
 --values ./kafka/akhq.values.yaml
@@ -54,7 +73,7 @@ helm upgrade --install akhq akhq/akhq \
 helm upgrade --install elasticsearch-cluster ./elasticsearch/elasticsearch-cluster \
 --namespace "$NAMESPACE" \
 --set elasticsearch.replicas="$ELASTICSEARCH_REPLICAS" \
---set kibana.ingress.hostname="kibana.$DOMAIN"
+--set kibana.ingress.hostname="$KIBANA_HOST"
 
 # Install Redis
 helm upgrade --install redis \
@@ -69,12 +88,15 @@ kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resourc
 # Install keycloak
 helm upgrade --install keycloak ./keycloak/keycloak \
 --namespace "$NAMESPACE" \
---set hostname="identity.$DOMAIN" \
+--set hostname="$IDENTITY_HOST" \
 --set postgresql.username="$POSTGRESQL_USERNAME" \
 --set postgresql.password="$POSTGRESQL_PASSWORD" \
 --set bootstrapAdmin.username="$BOOTSTRAP_ADMIN_USERNAME" \
 --set bootstrapAdmin.password="$BOOTSTRAP_ADMIN_PASSWORD" \
---set backofficeRedirectUrl="$KEYCLOAK_BACKOFFICE_REDIRECT_URL" \
---set storefrontRedirectUrl="$KEYCLOAK_STOREFRONT_REDIRECT_URL"
+--set backofficeRedirectUrl="$BACKOFFICE_REDIRECT_URL" \
+--set storefrontRedirectUrl="$STOREFRONT_REDIRECT_URL" \
+--set apiRedirectUrl="$API_REDIRECT_URL" \
+--set global.domain="$DOMAIN" \
+--set global.envTag="$ENV_TAG"
 
-echo ">>> Xong Giai đoạn 2.1: Data Instances đã được cài vào namespace '$NAMESPACE'."
+echo ">>> Xong Giai đoạn 2.1: Data Instances đã được cài vào namespace '$NAMESPACE' với domain prefix '$ENV_TAG'."

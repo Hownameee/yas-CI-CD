@@ -1,0 +1,70 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'TARGET_BUILD_ID', defaultValue: '', description: 'Nhập Build ID của Job Deploy mà bạn muốn xóa (Ví dụ: 12, 13...)')
+        booleanParam(name: 'CONFIRM_DESTROY', defaultValue: false, description: 'CẢNH BÁO: Tích vào đây để xác nhận xóa toàn bộ Services và Namespace của Build ID trên.')
+    }
+
+    environment {
+        YAS_NAMESPACE = "yas-${params.TARGET_BUILD_ID}"
+    }
+
+    stages {
+        stage('Xác nhận & Kiểm tra') {
+            steps {
+                script {
+                    if (params.TARGET_BUILD_ID == '') {
+                        error("HỦY BỎ: Bạn chưa nhập TARGET_BUILD_ID.")
+                    }
+
+                    if (!params.CONFIRM_DESTROY) {
+                        error("HỦY BỎ: Bạn chưa tích chọn CONFIRM_DESTROY để xác nhận xóa.")
+                    }
+
+                    echo """
+                        ==========================================================
+                         BẮT ĐẦU QUÁ TRÌNH DỌN DẸP
+                         Build ID mục tiêu : ${params.TARGET_BUILD_ID}
+                         Namespace mục tiêu: ${env.YAS_NAMESPACE}
+                        ==========================================================
+                    """
+                }
+            }
+        }
+
+        stage('Thực thi Cleanup') {
+            steps {
+                script {
+                    echo "-> Đang gỡ bỏ toàn bộ Helm releases trong namespace ${env.YAS_NAMESPACE}..."
+                    sh """
+                        helm list -n ${env.YAS_NAMESPACE} -q | xargs -r helm uninstall -n ${env.YAS_NAMESPACE}
+                    """
+
+                    echo "-> Đang xóa namespace ${env.YAS_NAMESPACE}..."
+                    sh """
+                        kubectl delete ns ${env.YAS_NAMESPACE} --ignore-not-found=true
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo """
+                ==========================================================
+                 THÀNH CÔNG: Môi trường của Build #${params.TARGET_BUILD_ID} 
+                 đã được gỡ bỏ hoàn toàn!
+                ==========================================================
+            """
+        }
+        failure {
+            echo """
+                ==========================================================
+                 THẤT BẠI: Có lỗi xảy ra trong quá trình dọn dẹp.
+                ==========================================================
+            """
+        }
+    }
+}

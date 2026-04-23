@@ -14,6 +14,10 @@ credentials:
   openai:
     apiKey: update-me
 
+global:
+  domain: yas.local.com
+  envTag: ""
+
 #Genneral application.yaml for all microservice
 applicationConfig:
   server:
@@ -58,7 +62,7 @@ applicationConfig:
       oauth2:
         resourceserver:
           jwt:
-            issuer-uri: http://identity.yas.local.com/realms/Yas
+            issuer-uri: http://identity{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}/realms/Yas
 
     datasource:
       url:
@@ -71,8 +75,8 @@ applicationConfig:
 
   springdoc:
     oauthflow:
-      authorization-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/auth
-      token-url: http://identity.yas.local.com/realms/Yas/protocol/openid-connect/token
+      authorization-url: http://identity{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}/realms/Yas/protocol/openid-connect/auth
+      token-url: http://identity{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}/realms/Yas/protocol/openid-connect/token
 
   yas:
     services:
@@ -213,7 +217,7 @@ backofficeBffExtraConfig:
         client:
           provider:
             keycloak:
-              issuer-uri: http://identity.yas.local.com/realms/Yas
+              issuer-uri: http://identity{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}/realms/Yas
           registration:
             api-client:
               provider: keycloak
@@ -233,7 +237,7 @@ storefrontBffExtraConfig:
         client:
           provider:
             keycloak:
-              issuer-uri: http://identity.yas.local.com/realms/Yas
+              issuer-uri: http://identity{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}/realms/Yas
           registration:
             api-client:
               provider: keycloak
@@ -247,12 +251,12 @@ mediaApplicationConfig:
     servlet:
       context-path: /media
   yas:
-    publicUrl: http://api.yas.local.com/media
+    publicUrl: http://api{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}/media
 
 # Customer application config custom
 customerApplicationConfig:
   keycloak:
-    auth-server-url: http://identity.yas.local.com
+    auth-server-url: http://identity{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}
     realm: Yas
     resource: customer-management
     credentials:
@@ -269,7 +273,7 @@ searchApplicationConfig:
 paymentPaypalApplicationConfig:
   yas:
     public:
-      url: http://storefront.yas.local.com/complete-payment
+      url: http://storefront{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}/complete-payment
 
 # Recommendation application config custom
 recommendationApplicationConfig:
