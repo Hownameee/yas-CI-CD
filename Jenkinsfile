@@ -70,6 +70,7 @@ pipeline {
                         export ENV_TAG=${env.ENV_TAG}
                         export YAS_NAMESPACE=${env.YAS_NAMESPACE}
                         ./02-setup-data-layer.sh
+                        sleep(60)
                     """
                 }
             }
@@ -126,35 +127,20 @@ pipeline {
                     // Deploy BFFs and UIs
                     deployService('backoffice-bff', false, "")
                     deployService('backoffice-ui', true, "--set ui.extraEnvs[0].name=API_BASE_PATH --set ui.extraEnvs[0].value=http://backoffice-${env.ENV_TAG}.${env.DOMAIN}/api")
+                    sleep(20)
                     
                     deployService('storefront-bff', false, "")
                     deployService('storefront-ui', true, "--set ui.extraEnvs[0].name=API_BASE_PATH --set ui.extraEnvs[0].value=http://storefront-${env.ENV_TAG}.${env.DOMAIN}/api")
+                    sleep(20)
                     
                     deployService('swagger-ui', false, "")
+                    sleep(20)
 
                     // Deploy Microservices
                     def services = ["cart", "customer", "inventory", "location", "media", "order", "payment", "product", "promotion", "rating", "search", "tax", "recommendation", "webhook", "sampledata"]
                     for (svc in services) {
                         deployService(svc, false, "")
-                        sleep(5)
-                    }
-                }
-            }
-        }
-
-        stage('Patch CoreDNS') {
-            steps {
-                script {
-                    def ingressIp = sh(script: "kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.spec.clusterIP}'", returnStdout: true).trim()
-                    if (ingressIp) {
-                        sh """
-                            kubectl get cm coredns -n kube-system -o jsonpath='{.data.Corefile}' > Corefile
-                            DOMAIN_SUFFIX="-${env.ENV_TAG}.${env.DOMAIN}"
-                            # Add dynamic domains to hosts block
-                            sed -i "/hosts {/a \\           ${ingressIp} identity\${DOMAIN_SUFFIX} backoffice\${DOMAIN_SUFFIX} storefront\${DOMAIN_SUFFIX} api\${DOMAIN_SUFFIX}" Corefile
-                            kubectl create configmap coredns -n kube-system --from-file=Corefile -o yaml --dry-run=client | kubectl apply -f -
-                            kubectl rollout restart deployment coredns -n kube-system
-                        """
+                        sleep(30)
                     }
                 }
             }
