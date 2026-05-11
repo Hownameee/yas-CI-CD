@@ -1,0 +1,163 @@
+---
+# Source: cart/charts/backend/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cart
+  labels:
+    helm.sh/chart: backend-0.1.0
+    app.kubernetes.io/name: cart
+    app.kubernetes.io/instance: cart
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: cart/charts/backend/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart
+  labels:
+    helm.sh/chart: backend-0.1.0
+    app.kubernetes.io/name: cart
+    app.kubernetes.io/instance: cart
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8090
+      targetPort: metric
+      protocol: TCP
+      name: metric
+  selector:
+    app.kubernetes.io/name: cart
+    app.kubernetes.io/instance: cart
+---
+# Source: cart/charts/backend/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+  labels:
+    helm.sh/chart: backend-0.1.0
+    app.kubernetes.io/name: cart
+    app.kubernetes.io/instance: cart
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    reloader.stakater.com/search: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cart
+      app.kubernetes.io/instance: cart
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cart
+        app.kubernetes.io/instance: cart
+    spec:
+      serviceAccountName: cart
+      securityContext:
+        {}
+      volumes:
+        - name: yas-configuration
+          configMap:
+            name: yas-configuration-configmap
+        - configMap:
+            name: cart-application-configmap
+          name: cart-application-config
+      containers:
+        - name: cart
+          securityContext:
+            {}
+          image: "hownamee/yas-cart:latest"
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: yas-postgresql-credentials-secret
+          env:
+            - name: LOGGING_CONFIG
+              value: /opt/yas/config/logback.xml
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://postgresql:5432/cart
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: /opt/yas/config/application.yaml,/opt/yas/cart/cart-application.yaml
+          volumeMounts:
+            - mountPath: /opt/yas/config
+              name: yas-configuration
+            - mountPath: /opt/yas/cart
+              name: cart-application-config
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: metric
+              containerPort: 8090
+          lifecycle:
+            
+            preStop:
+              exec:
+                command:
+                - sh
+                - -c
+                - sleep 10
+          livenessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /actuator/health/liveness
+              port: metric
+            periodSeconds: 10
+            successThreshold: 1
+          readinessProbe:
+            failureThreshold: 12
+            httpGet:
+              path: /actuator/health/readiness
+              port: metric
+            periodSeconds: 10
+            successThreshold: 1
+          resources:
+            {}
+      terminationGracePeriodSeconds: 45
+---
+# Source: cart/charts/backend/templates/servicemonitoring.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: cart
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cart
+  endpoints:
+    - port: 'metric'
+      path: '/actuator/prometheus'
+---
+# Source: cart/charts/backend/templates/virtualservice.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: cart
+  labels:
+    helm.sh/chart: backend-0.1.0
+    app.kubernetes.io/name: cart
+    app.kubernetes.io/instance: cart
+    app.kubernetes.io/version: "latest"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  hosts:
+    - cart
+  http:
+    - route:
+        - destination:
+            host: cart
+      retries:
+        attempts: 3
+        retryOn: 5xx,connect-failure
