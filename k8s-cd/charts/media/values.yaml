@@ -7,14 +7,19 @@ backend:
   fullnameOverride: media
   databaseName: media
   ingress:
-    enabled: false
+    enabled: true
+    path: /media
   extraVolumes:
     - name: media-application
       configMap:
         name: media-application-configmap
+    - name: media-storage
+      emptyDir: {}
   extraVolumeMounts:
     - name: media-application
       mountPath: /opt/yas/media
+    - name: media-storage
+      mountPath: /images
   extraApplicationConfigPaths:
     - /opt/yas/media/media-application.yaml
 

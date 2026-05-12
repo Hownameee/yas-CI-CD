@@ -80,6 +80,12 @@ helm upgrade --install grafana-operator oci://ghcr.io/grafana-operator/helm-char
 --version v5.0.2 \
 --create-namespace --namespace observability
 
+# Install keycloak operator
+kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.0.2/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/26.0.2/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+kubectl create namespace keycloak || true
+kubectl apply -f ./keycloak/operator.yaml
+
 # Add datasource and dashboard to grafana
 helm upgrade --install grafana ./observability/grafana \
 --create-namespace --namespace observability \
@@ -88,3 +94,4 @@ helm upgrade --install grafana ./observability/grafana \
 --set grafana.password="$GRAFANA_PASSWORD"
 
 echo ">>> Xong Giai đoạn 1: Các Operator và Observability đã được cài đặt vào các namespace độc lập."
+sleep 50
