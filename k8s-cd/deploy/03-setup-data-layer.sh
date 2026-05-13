@@ -94,4 +94,5 @@ helm upgrade --install keycloak ./keycloak/keycloak \
 --set global.domain="$DOMAIN" \
 --set global.envTag="$ENV_TAG"
 
-echo ">>> Xong Giai đoạn 2.1: Data Instances đã được cài vào namespace '$NAMESPACE' với domain prefix '$ENV_TAG'."
+echo ">>> Xong Giai đoạn 3: Data Instances đã được cài vào namespace '$NAMESPACE' với domain prefix '$ENV_TAG'."
+sleep 50

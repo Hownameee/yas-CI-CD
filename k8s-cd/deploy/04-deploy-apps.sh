@@ -111,4 +111,4 @@ done
 # Populate media images after all services are deployed
 populate_media_images "$NAMESPACE"
 
-echo ">>> Xong Giai đoạn 2.2: Tất cả Microservices và UI đã được cài vào namespace '$NAMESPACE' với domain prefix '$ENV_TAG'."
+echo ">>> Xong Giai đoạn 4: Tất cả Microservices và UI đã được cài vào namespace '$NAMESPACE' với domain prefix '$ENV_TAG'."

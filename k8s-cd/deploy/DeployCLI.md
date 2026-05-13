@@ -11,15 +11,16 @@ minikube addons enable ingress
 
 ## 1. Triển khai Hệ thống (Kiến trúc Hybrid)
 
-Di chuyển vào thư mục `deploy` và chạy tuần tự các script theo đúng 3 giai đoạn:
+Di chuyển vào thư mục `deploy` và chạy tuần tự các script theo đúng 4 giai đoạn:
 
 ```bash
 cd k8s-cd/deploy/
-export YAS_NAMESPACE="yas-13"
-export ENV_TAG="dev-13" 
+export YAS_NAMESPACE="yas-52"
+export ENV_TAG="dev-52" 
 ./01-setup-operators.sh
-./02-setup-data-layer.sh
-./03-deploy-apps.sh
+./02-setup-service-mesh.sh
+./03-setup-data-layer.sh
+./04-deploy-apps.sh
 ```
 
 ## 2. Cấu hình Local DNS (Mapping Domain)
@@ -45,15 +46,15 @@ sudo nano /etc/hosts
 192.168.49.2 api.yas.local.com
 ```
 
-### Nếu dùng ENV_TAG (ví dụ `dev-13`):
+### Nếu dùng ENV_TAG (ví dụ `dev-52`):
 ```text
-192.168.49.2 identity-dev-13.yas.local.com
-192.168.49.2 backoffice-dev-13.yas.local.com
-192.168.49.2 storefront-dev-13.yas.local.com
-192.168.49.2 api-dev-13.yas.local.com
-192.168.49.2 pgadmin-dev-13.yas.local.com
-192.168.49.2 akhq-dev-13.yas.local.com
-192.168.49.2 kibana-dev-13.yas.local.com
+192.168.49.2 identity-dev-52.yas.local.com
+192.168.49.2 backoffice-dev-52.yas.local.com
+192.168.49.2 storefront-dev-52.yas.local.com
+192.168.49.2 api-dev-52.yas.local.com
+192.168.49.2 pgadmin-dev-52.yas.local.com
+192.168.49.2 akhq-dev-52.yas.local.com
+192.168.49.2 kibana-dev-52.yas.local.com
 192.168.49.2 grafana.yas.local.com
 ```
 
