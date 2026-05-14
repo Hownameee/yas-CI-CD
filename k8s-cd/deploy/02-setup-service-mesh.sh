@@ -30,5 +30,34 @@ helm upgrade --install kiali-server kiali/kiali-server \
 echo ">>> Enabling automatic sidecar injection for namespace '$NAMESPACE'..."
 kubectl label namespace "$NAMESPACE" istio-injection=enabled --overwrite
 
-echo ">>> Xong Giai đoạn 2: Cài đặt Service Mesh (Istio) và Kiali. Namespace '$NAMESPACE' đã được kích hoạt sidecar injection."
+echo ">>> Injecting Istio sidecar into 'ingress-nginx' namespace (to support STRICT mTLS entry)..."
+kubectl label namespace ingress-nginx istio-injection=enabled --overwrite
+kubectl rollout restart deployment ingress-nginx-controller -n ingress-nginx
+
+echo ">>> Applying Istio configurations (mTLS, Destination Rules, Auth Policies) via Loop..."
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Read configuration value from cluster-config.yaml file to construct hosts
+DOMAIN=$(yq -r '.domain' "$SCRIPT_DIR/cluster-config.yaml")
+NAMESPACE="${YAS_NAMESPACE:-yas}"
+if [ -n "${ENV_TAG:-}" ]; then
+  IDENTITY_HOST="identity-$ENV_TAG.$DOMAIN"
+else
+  IDENTITY_HOST="identity.$DOMAIN"
+fi
+
+export NAMESPACE DOMAIN IDENTITY_HOST
+
+ISTIO_CONFIGS=("ingress-mtls.yaml" "mtls.yaml" "destination-rule.yaml" "keycloak-internal-dns.yaml")
+
+for config in "${ISTIO_CONFIGS[@]}"; do
+    if [ -s "$SCRIPT_DIR/istio/$config" ]; then
+        echo ">>> Applying $config..."
+        envsubst < "$SCRIPT_DIR/istio/$config" | kubectl apply -f -
+    else
+        echo ">>> Skipping $config (empty or not found)."
+    fi
+done
+
+echo ">>> Xong Giai đoạn 2: Cài đặt Service Mesh (Istio), Kiali và áp dụng Policies."
 sleep 50

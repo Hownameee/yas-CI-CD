@@ -251,7 +251,7 @@ mediaApplicationConfig:
     servlet:
       context-path: /media
   yas:
-    publicUrl: http://api{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}/media
+    publicUrl: https://api{{ if .Values.global.envTag }}-{{ .Values.global.envTag }}{{ end }}.{{ .Values.global.domain }}/media
 
 # Customer application config custom
 customerApplicationConfig:

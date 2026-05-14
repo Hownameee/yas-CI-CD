@@ -1,0 +1,86 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: ${NAMESPACE}
+spec:
+  mtls:
+    mode: STRICT
+---
+# Postgres requires PERMISSIVE or DISABLE for native binary protocol compatibility
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: postgres-permissive
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      cluster-name: postgresql
+  mtls:
+    mode: PERMISSIVE
+# ---
+# # Keycloak exclusion (uncomment if login issues occur)
+# apiVersion: security.istio.io/v1beta1
+# kind: PeerAuthentication
+# metadata:
+#   name: keycloak-permissive
+#   namespace: ${NAMESPACE}
+# spec:
+#   selector:
+#     matchLabels:
+#       app: keycloak
+#   mtls:
+#     mode: PERMISSIVE
+# ---
+# # Media exclusion (uncomment if image fetching issues occur)
+# apiVersion: security.istio.io/v1beta1
+# kind: PeerAuthentication
+# metadata:
+#   name: media-permissive
+#   namespace: ${NAMESPACE}
+# spec:
+#   selector:
+#     matchLabels:
+#       app.kubernetes.io/name: media
+#   mtls:
+#     mode: PERMISSIVE
+---
+# Kafka exclusion
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: kafka-permissive
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      strimzi.io/kind: Kafka
+  mtls:
+    mode: PERMISSIVE
+---
+# Kafka Connect REST is reconciled by the Strimzi operator outside this mesh namespace.
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: kafka-connect-permissive
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      strimzi.io/kind: KafkaConnect
+  mtls:
+    mode: PERMISSIVE
+---
+# Zookeeper exclusion
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: zookeeper-permissive
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      strimzi.io/kind: Zookeeper
+  mtls:
+    mode: PERMISSIVE

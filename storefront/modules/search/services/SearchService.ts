@@ -5,7 +5,7 @@ import apiClientService from '@/common/services/ApiClientService';
 
 export async function getSuggestions(keyword: string): Promise<ProductSearchSuggestions> {
   const response = await apiClientService.get(
-    `/api/search/storefront/search_suggest?keyword=${keyword}`
+    `/api/search/storefront/search_suggest?keyword=${encodeURIComponent(keyword)}`
   );
   if (response.status >= 200 && response.status < 300) {
     return await response.json();
@@ -15,31 +15,34 @@ export async function getSuggestions(keyword: string): Promise<ProductSearchSugg
 }
 
 export async function searchProducts(params: SearchParams): Promise<SearchProductResponse> {
-  let url = `api/search/storefront/catalog-search?keyword=${params.keyword}`;
+  const queryParams = new URLSearchParams({
+    keyword: params.keyword,
+  });
   if (params.category) {
-    url += `&category=${params.category}`;
+    queryParams.set('category', params.category);
   }
   if (params.brand) {
-    url += `&brand=${params.brand}`;
+    queryParams.set('brand', params.brand);
   }
   if (params.attribute) {
-    url += `&attribute=${params.attribute}`;
+    queryParams.set('attribute', params.attribute);
   }
   if (params.minPrice) {
-    url += `&minPrice=${params.minPrice}`;
+    queryParams.set('minPrice', params.minPrice.toString());
   }
   if (params.maxPrice) {
-    url += `&maxPrice=${params.maxPrice}`;
+    queryParams.set('maxPrice', params.maxPrice.toString());
   }
   if (params.sortType) {
-    url += `&sortType=${params.sortType}`;
+    queryParams.set('sortType', params.sortType);
   }
   if (params.page) {
-    url += `&page=${params.page}`;
+    queryParams.set('page', params.page.toString());
   }
   if (params.pageSize) {
-    url += `&pageSize=${params.pageSize}`;
+    queryParams.set('size', params.pageSize.toString());
   }
+  const url = `/api/search/storefront/catalog-search?${queryParams.toString()}`;
   const response = await apiClientService.get(url);
   if (response.status >= 200 && response.status < 300) {
     return await response.json();

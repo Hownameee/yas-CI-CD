@@ -18,10 +18,12 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "backend.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+    nginx.ingress.kubernetes.io/upstream-vhost: "{{ $fullName }}.{{ .Release.Namespace }}.svc.cluster.local"
+    {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- end }}
 spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.ingress.className }}

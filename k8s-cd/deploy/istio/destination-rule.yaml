@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: default
+  namespace: ${NAMESPACE}
+spec:
+  host: "*.${NAMESPACE}.svc.cluster.local"
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+---
+# Disable mTLS when connecting to Postgres
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: postgres-disable-mtls
+  namespace: ${NAMESPACE}
+spec:
+  host: postgresql.${NAMESPACE}.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: postgres-repl-disable-mtls
+  namespace: ${NAMESPACE}
+spec:
+  host: postgresql-repl.${NAMESPACE}.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: DISABLE

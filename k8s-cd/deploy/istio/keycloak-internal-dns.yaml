@@ -1,0 +1,34 @@
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: keycloak-external-alias
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+  - ${IDENTITY_HOST}
+  location: MESH_INTERNAL
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  - number: 8080
+    name: http-8080
+    protocol: HTTP
+  resolution: DNS
+  endpoints:
+  - address: keycloak-service.${NAMESPACE}.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: keycloak-external-redirect
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+  - ${IDENTITY_HOST}
+  http:
+  - route:
+    - destination:
+        host: keycloak-service.${NAMESPACE}.svc.cluster.local
+        port:
+          number: 8080
