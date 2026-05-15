@@ -1,1 +1,293 @@
-# Placeholder
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backoffice-bff-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - backoffice-bff
+    - backoffice-bff.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: backoffice-bff.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backoffice-ui-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - backoffice-ui
+    - backoffice-ui.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: backoffice-ui.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 3000
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: storefront-bff-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - storefront-bff
+    - storefront-bff.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: storefront-bff.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: storefront-ui-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - storefront-ui
+    - storefront-ui.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: storefront-ui.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 3000
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: swagger-ui-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - swagger-ui
+    - swagger-ui.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: swagger-ui.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 8080
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: cart-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - cart
+    - cart.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: cart.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: customer-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - customer
+    - customer.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: customer.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: inventory-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - inventory
+    - inventory.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: inventory.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: media-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - media
+    - media.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: media.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: order-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - order
+    - order.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: order.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: product-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - product
+    - product.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: product.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: search-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - search
+    - search.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: search.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: tax-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - tax
+    - tax.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: tax.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: sampledata-retry
+  namespace: ${NAMESPACE}
+spec:
+  hosts:
+    - sampledata
+    - sampledata.${NAMESPACE}.svc.cluster.local
+  http:
+    - timeout: 10s
+      retries:
+        attempts: 3
+        perTryTimeout: 3s
+        retryOn: 5xx,connect-failure,refused-stream,gateway-error
+      route:
+        - destination:
+            host: sampledata.${NAMESPACE}.svc.cluster.local
+            port:
+              number: 80

@@ -1,6 +1,39 @@
 #!/bin/bash
 set -x
 
+wait_for_keycloak_ingress() {
+  local namespace=$1
+  local identity_host=$2
+
+  echo ">>> Waiting for Keycloak service endpoints..."
+  for i in {1..60}; do
+    endpoints=$(kubectl get endpoints keycloak-service -n "$namespace" -o jsonpath='{.subsets[*].addresses[*].ip}' 2>/dev/null || true)
+    if [ -n "$endpoints" ]; then
+      echo ">>> Keycloak service endpoint is ready: $endpoints"
+      break
+    fi
+    sleep 2
+  done
+
+  if [ -z "${endpoints:-}" ]; then
+    echo ">>> ERROR: keycloak-service has no endpoints."
+    return 1
+  fi
+
+  echo ">>> Waiting for Helm-managed keycloak-ingress..."
+  for i in {1..60}; do
+    ingress_host=$(kubectl get ingress keycloak-ingress -n "$namespace" -o jsonpath='{.spec.rules[0].host}' 2>/dev/null || true)
+    if [ "$ingress_host" = "$identity_host" ]; then
+      echo ">>> keycloak-ingress is ready for host: $ingress_host"
+      return 0
+    fi
+    sleep 2
+  done
+
+  echo ">>> ERROR: keycloak-ingress is missing or has wrong host."
+  return 1
+}
+
 helm repo add akhq https://akhq.io/
 helm repo update
 
@@ -93,6 +126,10 @@ helm upgrade --install keycloak ./keycloak/keycloak \
 --set apiRedirectUrl="$API_REDIRECT_URL" \
 --set global.domain="$DOMAIN" \
 --set global.envTag="$ENV_TAG"
+
+kubectl rollout status statefulset/keycloak -n "$NAMESPACE" --timeout=300s
+kubectl wait --for=condition=Ready pod/keycloak-0 -n "$NAMESPACE" --timeout=300s
+wait_for_keycloak_ingress "$NAMESPACE" "$IDENTITY_HOST"
 
 echo ">>> Xong Giai đoạn 3: Data Instances đã được cài vào namespace '$NAMESPACE' với domain prefix '$ENV_TAG'."
 sleep 50

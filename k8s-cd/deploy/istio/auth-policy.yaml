@@ -1,1 +1,282 @@
-# Placeholder
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-backoffice-ui-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backoffice-ui
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-storefront-ui-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: storefront-ui
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-swagger-ui-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: swagger-ui
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-backoffice-bff-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backoffice-bff
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-ui
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-storefront-bff-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: storefront-bff
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-ui
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-product-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: product
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/${NAMESPACE}/sa/cart
+              - cluster.local/ns/${NAMESPACE}/sa/inventory
+              - cluster.local/ns/${NAMESPACE}/sa/order
+              - cluster.local/ns/${NAMESPACE}/sa/sampledata
+              - cluster.local/ns/${NAMESPACE}/sa/search
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-media-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: media
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/${NAMESPACE}/sa/cart
+              - cluster.local/ns/${NAMESPACE}/sa/product
+              - cluster.local/ns/${NAMESPACE}/sa/sampledata
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-cart-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cart
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/${NAMESPACE}/sa/order
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-customer-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: customer
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/${NAMESPACE}/sa/order
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-order-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: order
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-tax-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tax
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/${NAMESPACE}/sa/order
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-search-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: search
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-inventory-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: inventory
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/${NAMESPACE}/sa/order
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-sampledata-callers
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sampledata
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
+              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui

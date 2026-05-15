@@ -1,6 +1,9 @@
 #!/bin/bash
 set -x
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
 helm repo add stakater https://stakater.github.io/stakater-charts
 helm repo update
 
@@ -34,8 +37,7 @@ populate_media_images() {
   
   if [ -n "$media_pod" ]; then
     echo ">>> Copying images to pod $media_pod..."
-    # The script is in k8s-cd/deploy, images are at ../../sampledata/images/sample
-    kubectl cp ../../sampledata/images/sample -n "$namespace" "$media_pod":/images/
+    kubectl cp "$REPO_DIR/sampledata/images/sample" -n "$namespace" "$media_pod":/images/
     echo ">>> Sample images populated successfully."
   else
     echo ">>> ERROR: Media pod not found. Skipping image population."
@@ -84,7 +86,7 @@ helm upgrade --install storefront-ui ../charts/storefront-ui \
 --namespace "$NAMESPACE" \
 --set ingress.host="$STOREFRONT_HOST" \
 --set ui.extraEnvs[0].name=API_BASE_PATH \
---set ui.extraEnvs[0].value="http://$STOREFRONT_HOST/api"
+--set ui.extraEnvs[0].value="http://storefront-bff/api"
 
 sleep 35
 
@@ -96,7 +98,7 @@ helm upgrade --install swagger-ui ../charts/swagger-ui \
 sleep 35
 
 echo ">>> Deploying Core Microservices..."
-for chart in {"cart","customer","inventory","location","media","order","payment","product","promotion","rating","search","tax","recommendation","webhook","sampledata"} ; do
+for chart in {"cart","customer","inventory","media","order","product","search","tax","sampledata"} ; do
     helm dependency build ../charts/"$chart"
     helm upgrade --install "$chart" ../charts/"$chart" \
     --namespace "$NAMESPACE" \

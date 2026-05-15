@@ -48,7 +48,7 @@ fi
 
 export NAMESPACE DOMAIN IDENTITY_HOST
 
-ISTIO_CONFIGS=("ingress-mtls.yaml" "mtls.yaml" "destination-rule.yaml" "keycloak-internal-dns.yaml")
+ISTIO_CONFIGS=("ingress-mtls.yaml" "mtls.yaml" "destination-rule.yaml" "keycloak-internal-dns.yaml" "virtual-service-retry-template.yaml" "auth-policy.yaml")
 
 for config in "${ISTIO_CONFIGS[@]}"; do
     if [ -s "$SCRIPT_DIR/istio/$config" ]; then

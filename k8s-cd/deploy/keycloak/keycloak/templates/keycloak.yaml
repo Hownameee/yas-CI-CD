@@ -27,8 +27,7 @@ spec:
   proxy:
     headers: xforwarded
   ingress:
-    enabled: true
-    className: nginx
+    enabled: false
   unsupported:
    podTemplate:
      spec:

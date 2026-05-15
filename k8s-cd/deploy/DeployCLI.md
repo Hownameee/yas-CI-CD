@@ -5,7 +5,8 @@
 Khởi tạo cụm và bật addon Ingress (bỏ qua bước cài Ingress Controller thủ công):
 
 ```bash
-minikube start --driver=docker --disk-size='80000mb' --memory='18g' --cpus='7' --kubernetes-version=v1.29.0
+minikube delete
+minikube start --driver=docker --disk-size='80000mb' --memory='18g' --cpus='12' --kubernetes-version=v1.29.0
 minikube addons enable ingress
 ```
 
