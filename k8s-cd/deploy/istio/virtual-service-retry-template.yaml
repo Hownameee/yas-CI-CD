@@ -5,7 +5,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - backoffice-bff
     - backoffice-bff.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -26,7 +25,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - backoffice-ui
     - backoffice-ui.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -47,7 +45,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - storefront-bff
     - storefront-bff.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -68,7 +65,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - storefront-ui
     - storefront-ui.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -89,7 +85,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - swagger-ui
     - swagger-ui.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -110,7 +105,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - cart
     - cart.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -131,7 +125,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - customer
     - customer.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -152,7 +145,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - inventory
     - inventory.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -173,7 +165,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - media
     - media.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -194,7 +185,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - order
     - order.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -215,7 +205,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - product
     - product.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -236,7 +225,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - search
     - search.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -257,7 +245,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - tax
     - tax.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s
@@ -278,7 +265,6 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   hosts:
-    - sampledata
     - sampledata.${NAMESPACE}.svc.cluster.local
   http:
     - timeout: 10s

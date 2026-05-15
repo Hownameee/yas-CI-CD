@@ -13,7 +13,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
 ---
 apiVersion: security.istio.io/v1beta1
@@ -31,7 +30,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
 ---
 apiVersion: security.istio.io/v1beta1
@@ -49,7 +47,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
@@ -66,7 +63,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-ui
               - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
 ---
@@ -85,7 +81,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/storefront-ui
               - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
 ---
@@ -104,7 +99,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
               - cluster.local/ns/${NAMESPACE}/sa/cart
@@ -129,7 +123,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
               - cluster.local/ns/${NAMESPACE}/sa/cart
@@ -152,7 +145,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
               - cluster.local/ns/${NAMESPACE}/sa/order
@@ -173,7 +165,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
               - cluster.local/ns/${NAMESPACE}/sa/order
@@ -194,7 +185,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
               - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
@@ -214,7 +204,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
               - cluster.local/ns/${NAMESPACE}/sa/order
@@ -235,7 +224,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
               - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
@@ -255,7 +243,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
               - cluster.local/ns/${NAMESPACE}/sa/order
@@ -276,7 +263,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/ingress-nginx/sa/ingress-nginx-admission
               - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
               - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
               - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
