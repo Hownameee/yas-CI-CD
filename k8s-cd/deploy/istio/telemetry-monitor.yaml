@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: istio-sidecars
+  namespace: observability
+  labels:
+    release: prometheus
+spec:
+  namespaceSelector:
+    matchNames:
+      - ${NAMESPACE}
+      - ingress-nginx
+  selector:
+    matchLabels:
+      security.istio.io/tlsMode: istio
+  podMetricsEndpoints:
+    - port: http-envoy-prom
+      path: /stats/prometheus
+      interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: istiod
+  namespace: observability
+  labels:
+    release: prometheus
+spec:
+  namespaceSelector:
+    matchNames:
+      - istio-system
+  selector:
+    matchLabels:
+      app: istiod
+      istio: pilot
+  endpoints:
+    - port: http-monitoring
+      path: /metrics
+      interval: 15s
