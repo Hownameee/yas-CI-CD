@@ -24,7 +24,113 @@ export ENV_TAG="dev-52"
 ./04-deploy-apps.sh
 ```
 
-## 2. Cấu hình Local DNS (Mapping Domain)
+## 2. Service Mesh / Kiali sau khi deploy
+
+Các manifest mTLS, retry, authorization policy và Prometheus monitor cho Kiali được apply trong:
+
+```bash
+./02-setup-service-mesh.sh
+```
+
+Mở Kiali:
+
+```bash
+./07-open-kiali.sh
+```
+
+Sau đó mở:
+
+```text
+http://localhost:20001/kiali
+```
+
+Gợi ý cấu hình graph:
+
+```text
+Namespace: yas-52
+Graph: Workload graph hoặc Service graph
+Time range: Last 10m / Last 15m
+Display: Traffic, Security
+```
+
+Tạo traffic để Kiali hiện topology:
+
+```bash
+./05-generate-kiali-traffic.sh
+```
+
+Script này mặc định dùng:
+
+```text
+YAS_NAMESPACE=yas-52
+ENV_TAG=dev-52
+COUNT=30
+SLEEP_SECONDS=1
+```
+
+Nếu cần đổi:
+
+```bash
+YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./05-generate-kiali-traffic.sh
+```
+
+## 3. Evidence cho yêu cầu Service Mesh
+
+Chạy script này để tạo pod test, bắn traffic và ghi log evidence:
+
+```bash
+./06-service-mesh-evidence.sh
+```
+
+Hoặc dùng lệnh one-shot đầy đủ hơn, gồm cả retry thành công và retry thất bại:
+
+```bash
+./08-service-mesh-one-shot.sh
+```
+
+Lệnh one-shot sẽ tạo thêm service demo tạm:
+
+```text
+retry-flaky
+```
+
+`retry-flaky` cố ý trả `500, 500, 200` để chứng minh retry thành công trong một request.
+
+Script sẽ tạo 3 pod tạm trong 5 phút:
+
+```text
+auth-allowed-storefront-bff  serviceAccount=storefront-bff
+auth-blocked-default         serviceAccount=default
+retry-test                   serviceAccount=storefront-bff
+```
+
+File evidence được ghi vào:
+
+```text
+k8s-cd/deploy/evidence/auth-policy-test-3.txt
+k8s-cd/deploy/evidence/retry-failure-evidence.txt
+k8s-cd/deploy/evidence/retry-success-evidence.txt
+```
+
+Ý nghĩa:
+
+```text
+auth-allowed-storefront-bff -> product = 200
+auth-blocked-default        -> product = 403 RBAC: access denied
+retry-test                  -> product actuator endpoint = 500 + Envoy response_flags.URX
+retry-test                  -> retry-flaky = 200 after retry
+```
+
+Trong Kiali, chọn `Workload graph` và tìm:
+
+```text
+auth-allowed-storefront-bff -> product
+auth-blocked-default -> product
+retry-test -> product
+retry-test -> retry-flaky
+```
+
+## 4. Cấu hình Local DNS (Mapping Domain)
 
 ```bash
 kubectl get nodes -o wide
@@ -59,7 +165,7 @@ sudo nano /etc/hosts
 192.168.49.2 grafana.yas.local.com
 ```
 
-## 3. Teardown & Cleanup (Dọn dẹp cụm)
+## 5. Teardown & Cleanup (Dọn dẹp cụm)
 
 Để gỡ bỏ toàn bộ hệ thống một cách sạch sẽ:
 

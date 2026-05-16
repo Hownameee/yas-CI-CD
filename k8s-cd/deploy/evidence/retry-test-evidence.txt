@@ -1,0 +1,65 @@
+Retry Policy Evidence
+Sat May 16 13:41:02 +07 2026
+
+Temporary retry pod:
+NAME         SERVICE_ACCOUNT   READY       STATUS    CONTAINERS
+retry-test   storefront-bff    true,true   Running   curl,istio-proxy
+
+Product retry VirtualService:
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.istio.io/v1beta1","kind":"VirtualService","metadata":{"annotations":{},"name":"product-retry","namespace":"yas-52"},"spec":{"hosts":["product.yas-52.svc.cluster.local"],"http":[{"retries":{"attempts":3,"perTryTimeout":"3s","retryOn":"5xx,connect-failure,refused-stream,gateway-error"},"route":[{"destination":{"host":"product.yas-52.svc.cluster.local","port":{"number":80}}}],"timeout":"10s"}]}}
+  creationTimestamp: "2026-05-16T04:29:08Z"
+  generation: 1
+  name: product-retry
+  namespace: yas-52
+  resourceVersion: "3435"
+  uid: b1b2db69-e153-4965-92de-43f58a4e838f
+spec:
+  hosts:
+  - product.yas-52.svc.cluster.local
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 3s
+      retryOn: 5xx,connect-failure,refused-stream,gateway-error
+    route:
+    - destination:
+        host: product.yas-52.svc.cluster.local
+        port:
+          number: 80
+    timeout: 10s
+
+[TRIGGER 500] retry-test serviceAccount=storefront-bff -> product actuator endpoint
+HTTP/1.1 500 Internal Server Error
+vary: Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json
+date: Sat, 16 May 2026 06:41:02 GMT
+x-envoy-upstream-service-time: 85
+server: envoy
+transfer-encoding: chunked
+
+{"statusCode":"500 INTERNAL_SERVER_ERROR","title":"Internal Server Error","detail":"No static resource actuator/health.","fieldErrors":null}
+[ENVOY RETRY/STATS EVIDENCE]
+cluster.xds-grpc;.circuit_breakers.default.rq_retry_open: 0
+cluster.xds-grpc;.circuit_breakers.high.rq_retry_open: 0
+cluster.xds-grpc;.retry_or_shadow_abandoned: 0
+cluster.xds-grpc;.upstream_rq_retry: 0
+cluster.xds-grpc;.upstream_rq_retry_backoff_exponential: 0
+cluster.xds-grpc;.upstream_rq_retry_backoff_ratelimited: 0
+cluster.xds-grpc;.upstream_rq_retry_limit_exceeded: 0
+cluster.xds-grpc;.upstream_rq_retry_overflow: 0
+cluster.xds-grpc;.upstream_rq_retry_success: 0
+istiocustom.istio_requests_total.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.product.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/product.destination_app.product.destination_version.unknown.destination_service.product.yas-52.svc.cluster.local.destination_canonical_service.product.destination_canonical_revision.latest.destination_service_name.product.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.500.grpc_response_status.response_flags.URX.connection_security_policy.unknown: 21
+istiocustom.istio_request_bytes.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.product.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/product.destination_app.product.destination_version.unknown.destination_service.product.yas-52.svc.cluster.local.destination_canonical_service.product.destination_canonical_revision.latest.destination_service_name.product.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.500.grpc_response_status.response_flags.URX.connection_security_policy.unknown: P0(93,93) P25(93.25,93.25) P50(93.5,93.5) P75(93.75,93.75) P90(93.9,93.9) P95(93.95,93.95) P99(93.99,93.99) P99.5(93.995,93.995) P99.9(93.999,93.999) P100(94,94)
+istiocustom.istio_request_duration_milliseconds.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.product.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/product.destination_app.product.destination_version.unknown.destination_service.product.yas-52.svc.cluster.local.destination_canonical_service.product.destination_canonical_revision.latest.destination_service_name.product.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.500.grpc_response_status.response_flags.URX.connection_security_policy.unknown: P0(51,51) P25(79.75,79.75) P50(108.33333333333333,108.33333333333333) P75(134.16666666666666,134.16666666666666) P90(155,155) P95(162.5,162.5) P99(168.5,168.5) P99.5(169.25,169.25) P99.9(169.85,169.85) P100(170,170)
+istiocustom.istio_response_bytes.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.product.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/product.destination_app.product.destination_version.unknown.destination_service.product.yas-52.svc.cluster.local.destination_canonical_service.product.destination_canonical_revision.latest.destination_service_name.product.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.500.grpc_response_status.response_flags.URX.connection_security_policy.unknown: P0(580,580) P25(582.5,582.5) P50(585,585) P75(587.5,587.5) P90(589,589) P95(589.5,589.5) P99(589.9,589.9) P99.5(589.95,589.95) P99.9(589.99,589.99) P100(590,590)

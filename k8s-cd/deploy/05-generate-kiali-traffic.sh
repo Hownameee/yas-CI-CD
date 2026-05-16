@@ -2,9 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOMAIN="$(yq -r '.domain' "$SCRIPT_DIR/cluster-config.yaml")"
-ENV_TAG="${ENV_TAG:-}"
-NAMESPACE="${YAS_NAMESPACE:-yas}"
+DOMAIN="${DOMAIN:-$(yq -r '.domain' "$SCRIPT_DIR/cluster-config.yaml")}"
+ENV_TAG="${ENV_TAG:-dev-52}"
+NAMESPACE="${YAS_NAMESPACE:-yas-52}"
 MINIKUBE_IP="${MINIKUBE_IP:-$(minikube ip)}"
 COUNT="${COUNT:-30}"
 SLEEP_SECONDS="${SLEEP_SECONDS:-1}"
@@ -68,4 +68,4 @@ for i in $(seq 1 "$COUNT"); do
   sleep "$SLEEP_SECONDS"
 done
 
-echo ">>> Done. In Kiali, select namespace '$NAMESPACE', Last 15m, then refresh the Graph."
+echo ">>> Done. In Kiali, select namespace '$NAMESPACE', Graph=Workload graph or Service graph, Last 15m, then refresh."

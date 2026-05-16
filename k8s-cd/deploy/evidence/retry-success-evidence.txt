@@ -1,0 +1,69 @@
+Retry Success Evidence
+Sat May 16 13:48:00 +07 2026
+
+Temporary flaky service:
+NAME          READY   STATUS    RESTARTS   AGE   IP            NODE       NOMINATED NODE   READINESS GATES
+retry-flaky   2/2     Running   0          25s   10.244.0.82   minikube   <none>           <none>
+NAME          TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)   AGE   SELECTOR
+retry-flaky   ClusterIP   10.102.82.6   <none>        80/TCP    25s   app=retry-flaky
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.istio.io/v1beta1","kind":"VirtualService","metadata":{"annotations":{},"name":"retry-flaky-success","namespace":"yas-52"},"spec":{"hosts":["retry-flaky.yas-52.svc.cluster.local"],"http":[{"retries":{"attempts":3,"perTryTimeout":"3s","retryOn":"5xx,connect-failure,refused-stream,gateway-error"},"route":[{"destination":{"host":"retry-flaky.yas-52.svc.cluster.local","port":{"number":80}}}],"timeout":"10s"}]}}
+  creationTimestamp: "2026-05-16T06:47:36Z"
+  generation: 1
+  name: retry-flaky-success
+  namespace: yas-52
+  resourceVersion: "30398"
+  uid: 126ca59c-6f08-43cd-9396-021203fce7d0
+spec:
+  hosts:
+  - retry-flaky.yas-52.svc.cluster.local
+  http:
+  - retries:
+      attempts: 3
+      perTryTimeout: 3s
+      retryOn: 5xx,connect-failure,refused-stream,gateway-error
+    route:
+    - destination:
+        host: retry-flaky.yas-52.svc.cluster.local
+        port:
+          number: 80
+    timeout: 10s
+
+[RESET FLAKY COUNTER]
+HTTP/1.1 200 OK
+server: envoy
+date: Sat, 16 May 2026 06:48:01 GMT
+x-envoy-upstream-service-time: 0
+transfer-encoding: chunked
+
+reset
+[RETRY SUCCESS] One client request should finish as 200 after upstream returns 500 twice.
+HTTP/1.1 200 OK
+server: envoy
+date: Sat, 16 May 2026 06:48:01 GMT
+x-envoy-upstream-service-time: 54
+transfer-encoding: chunked
+
+flaky 200 attempt 3
+[ENVOY RETRY SUCCESS/STATS EVIDENCE]
+cluster.xds-grpc;.circuit_breakers.default.rq_retry_open: 0
+cluster.xds-grpc;.circuit_breakers.high.rq_retry_open: 0
+cluster.xds-grpc;.retry_or_shadow_abandoned: 0
+cluster.xds-grpc;.upstream_rq_retry: 0
+cluster.xds-grpc;.upstream_rq_retry_backoff_exponential: 0
+cluster.xds-grpc;.upstream_rq_retry_backoff_ratelimited: 0
+cluster.xds-grpc;.upstream_rq_retry_limit_exceeded: 0
+cluster.xds-grpc;.upstream_rq_retry_overflow: 0
+cluster.xds-grpc;.upstream_rq_retry_success: 0
+istiocustom.istio_requests_total.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.product.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/product.destination_app.product.destination_version.unknown.destination_service.product.yas-52.svc.cluster.local.destination_canonical_service.product.destination_canonical_revision.latest.destination_service_name.product.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.500.grpc_response_status.response_flags.URX.connection_security_policy.unknown: 21
+istiocustom.istio_requests_total.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.retry-flaky.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/default.destination_app.retry-flaky.destination_version.unknown.destination_service.retry-flaky.yas-52.svc.cluster.local.destination_canonical_service.retry-flaky.destination_canonical_revision.latest.destination_service_name.retry-flaky.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.200.grpc_response_status.response_flags.-.connection_security_policy.unknown: 24
+istiocustom.istio_request_bytes.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.product.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/product.destination_app.product.destination_version.unknown.destination_service.product.yas-52.svc.cluster.local.destination_canonical_service.product.destination_canonical_revision.latest.destination_service_name.product.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.500.grpc_response_status.response_flags.URX.connection_security_policy.unknown: P0(93,93) P25(93.25,93.25) P50(93.5,93.5) P75(93.75,93.75) P90(93.9,93.9) P95(93.95,93.95) P99(93.99,93.99) P99.5(93.995,93.995) P99.9(93.999,93.999) P100(94,94)
+istiocustom.istio_request_bytes.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.retry-flaky.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/default.destination_app.retry-flaky.destination_version.unknown.destination_service.retry-flaky.yas-52.svc.cluster.local.destination_canonical_service.retry-flaky.destination_canonical_revision.latest.destination_service_name.retry-flaky.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.200.grpc_response_status.response_flags.-.connection_security_policy.unknown: P0(99,99) P25(99.5,99.5) P50(100,100) P75(105,105) P90(108,108) P95(109,109) P99(109.8,109.8) P99.5(109.9,109.9) P99.9(109.98,109.98) P100(110,110)
+istiocustom.istio_request_duration_milliseconds.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.product.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/product.destination_app.product.destination_version.unknown.destination_service.product.yas-52.svc.cluster.local.destination_canonical_service.product.destination_canonical_revision.latest.destination_service_name.product.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.500.grpc_response_status.response_flags.URX.connection_security_policy.unknown: P0(48,48) P25(80.25,75) P50(97.5,96) P75(117.50000000000001,116.66666666666669) P90(137,130) P95(153.5,140) P99(158.7,158) P99.5(159.35,159) P99.9(159.87,159.8) P100(160,160)
+istiocustom.istio_request_duration_milliseconds.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.retry-flaky.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/default.destination_app.retry-flaky.destination_version.unknown.destination_service.retry-flaky.yas-52.svc.cluster.local.destination_canonical_service.retry-flaky.destination_canonical_revision.latest.destination_service_name.retry-flaky.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.200.grpc_response_status.response_flags.-.connection_security_policy.unknown: P0(0,0) P25(1.0125,1.0125) P50(5.1,5.1) P75(53.25,53.25) P90(62.2,62.2) P95(65.1,65.1) P99(65.82,65.82) P99.5(65.91,65.91) P99.9(65.982,65.982) P100(66,66)
+istiocustom.istio_response_bytes.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.product.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/product.destination_app.product.destination_version.unknown.destination_service.product.yas-52.svc.cluster.local.destination_canonical_service.product.destination_canonical_revision.latest.destination_service_name.product.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.500.grpc_response_status.response_flags.URX.connection_security_policy.unknown: P0(580,580) P25(582.5,582.5) P50(585,585) P75(587.5,587.5) P90(589,589) P95(589.5,589.5) P99(589.9,589.9) P99.5(589.95,589.95) P99.9(589.99,589.99) P100(590,590)
+istiocustom.istio_response_bytes.reporter.source.source_workload.retry-test.source_canonical_service.retry-test.source_canonical_revision.latest.source_workload_namespace.yas-52.source_principal.spiffe://cluster.local/ns/yas-52/sa/storefront-bff.source_app.source_version.source_cluster.Kubernetes.destination_workload.retry-flaky.destination_workload_namespace.yas-52.destination_principal.spiffe://cluster.local/ns/yas-52/sa/default.destination_app.retry-flaky.destination_version.unknown.destination_service.retry-flaky.yas-52.svc.cluster.local.destination_canonical_service.retry-flaky.destination_canonical_revision.latest.destination_service_name.retry-flaky.destination_service_namespace.yas-52.destination_cluster.Kubernetes.request_protocol.http.response_code.200.grpc_response_status.response_flags.-.connection_security_policy.unknown: P0(140,140) P25(145,145) P50(150,150) P75(165,165) P90(168,168) P95(169,169) P99(169.8,169.8) P99.5(169.9,169.9) P99.9(169.98,169.98) P100(170,170)

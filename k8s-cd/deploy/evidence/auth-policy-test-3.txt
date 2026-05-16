@@ -1,0 +1,67 @@
+AuthorizationPolicy Test 3 Evidence
+Sat May 16 13:48:00 +07 2026
+
+Temporary pods:
+NAME                          SERVICE_ACCOUNT   READY       STATUS    CONTAINERS
+auth-allowed-storefront-bff   storefront-bff    true,true   Running   curl,istio-proxy
+auth-blocked-default          default           true,true   Running   curl,istio-proxy
+retry-test                    storefront-bff    true,true   Running   curl,istio-proxy
+retry-flaky                   default           true,true   Running   flaky,istio-proxy
+
+Product AuthorizationPolicy:
+apiVersion: security.istio.io/v1
+kind: AuthorizationPolicy
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"security.istio.io/v1beta1","kind":"AuthorizationPolicy","metadata":{"annotations":{},"name":"allow-product-callers","namespace":"yas-52"},"spec":{"action":"ALLOW","rules":[{"from":[{"source":{"principals":["cluster.local/ns/ingress-nginx/sa/ingress-nginx","cluster.local/ns/yas-52/sa/backoffice-bff","cluster.local/ns/yas-52/sa/storefront-bff","cluster.local/ns/yas-52/sa/cart","cluster.local/ns/yas-52/sa/inventory","cluster.local/ns/yas-52/sa/order","cluster.local/ns/yas-52/sa/sampledata","cluster.local/ns/yas-52/sa/search","cluster.local/ns/yas-52/sa/swagger-ui"]}}]}],"selector":{"matchLabels":{"app.kubernetes.io/name":"product"}}}}
+  creationTimestamp: "2026-05-16T04:29:09Z"
+  generation: 1
+  name: allow-product-callers
+  namespace: yas-52
+  resourceVersion: "3446"
+  uid: d15bd26b-f4b0-4897-baea-fa6c8351b681
+spec:
+  action: ALLOW
+  rules:
+  - from:
+    - source:
+        principals:
+        - cluster.local/ns/ingress-nginx/sa/ingress-nginx
+        - cluster.local/ns/yas-52/sa/backoffice-bff
+        - cluster.local/ns/yas-52/sa/storefront-bff
+        - cluster.local/ns/yas-52/sa/cart
+        - cluster.local/ns/yas-52/sa/inventory
+        - cluster.local/ns/yas-52/sa/order
+        - cluster.local/ns/yas-52/sa/sampledata
+        - cluster.local/ns/yas-52/sa/search
+        - cluster.local/ns/yas-52/sa/swagger-ui
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: product
+
+[ALLOWED] auth-allowed-storefront-bff serviceAccount=storefront-bff -> product
+HTTP/1.1 200 OK
+vary: Origin,Access-Control-Request-Method,Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-xss-protection: 0
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+pragma: no-cache
+expires: 0
+x-frame-options: DENY
+content-type: application/json
+date: Sat, 16 May 2026 06:48:00 GMT
+x-envoy-upstream-service-time: 4
+server: envoy
+transfer-encoding: chunked
+
+{"productContent":[],"pageNo":0,"pageSize":5,"totalElements":0,"totalPages":0,"isLast":true}
+[BLOCKED] auth-blocked-default serviceAccount=default -> product
+HTTP/1.1 403 Forbidden
+content-length: 19
+content-type: text/plain
+date: Sat, 16 May 2026 06:48:00 GMT
+server: envoy
+x-envoy-upstream-service-time: 0
+
+RBAC: access denied
