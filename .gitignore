@@ -12,6 +12,7 @@
 
 # Package Files #
 *.jar
+!**/themes/*.jar
 *.war
 *.nar
 *.ear
