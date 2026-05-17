@@ -1,20 +1,13 @@
-name: backoffice-bff service ci
+name: backoffice-bff service ci staging
 
 on:
   push:
-    branches-ignore:
+    branches:
       - "rc*"
     paths:
       - "backoffice-bff/**"
       - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/backoffice-bff-ci.yaml"
-      - "pom.xml"
-  pull_request:
-    branches: [ "main" ]
-    paths:
-      - "backoffice-bff/**"
-      - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/backoffice-bff-ci.yaml"
+      - ".github/workflows/backoffice-bff-ci-staging.yaml"
       - "pom.xml"
   workflow_dispatch:
 
@@ -32,13 +25,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set Docker Tags
+      - name: Set Docker Tag
         run: |
-          if [ "${{ github.ref_name }}" == "main" ]; then
-            echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-backoffice-bff:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/yas-backoffice-bff:latest" >> $GITHUB_ENV
-          else
-            echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-backoffice-bff:${{ github.sha }}" >> $GITHUB_ENV
-          fi
+          echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-backoffice-bff:${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6

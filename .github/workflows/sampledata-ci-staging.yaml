@@ -1,20 +1,13 @@
-name: sampledata service ci
+name: sampledata service ci staging
 
 on:
   push:
-    branches-ignore:
+    branches:
       - "rc*"
     paths:
       - "sampledata/**"
       - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/sampledata-ci.yaml"
-      - "pom.xml"
-  pull_request:
-    branches: ["main"]
-    paths:
-      - "sampledata/**"
-      - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/sampledata-ci.yaml"
+      - ".github/workflows/sampledata-ci-staging.yaml"
       - "pom.xml"
   workflow_dispatch:
 
@@ -32,13 +25,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set Docker Tags
+      - name: Set Docker Tag
         run: |
-          if [ "${{ github.ref_name }}" == "main" ]; then
-            echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-sampledata:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/yas-sampledata:latest" >> $GITHUB_ENV
-          else
-            echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-sampledata:${{ github.sha }}" >> $GITHUB_ENV
-          fi
+          echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-sampledata:${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6

@@ -1,19 +1,13 @@
-name: storefront service ci
+name: storefront service ci staging
 
 on:
   push:
-    branches-ignore:
+    branches:
       - "rc*"
     paths:
       - "storefront/**"
       - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/storefront-ci.yaml"
-  pull_request:
-    branches: [ "main" ]
-    paths:
-      - "storefront/**"
-      - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/storefront-ci.yaml"
+      - ".github/workflows/storefront-ci-staging.yaml"
   workflow_dispatch:
 
 jobs:
@@ -38,13 +32,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set Docker Tags
+      - name: Set Docker Tag
         run: |
-          if [ "${{ github.ref_name }}" == "main" ]; then
-            echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-storefront:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/yas-storefront:latest" >> $GITHUB_ENV
-          else
-            echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-storefront:${{ github.sha }}" >> $GITHUB_ENV
-          fi
+          echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-storefront:${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6

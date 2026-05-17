@@ -1,20 +1,13 @@
-name: customer service ci
+name: customer service ci staging
 
 on:
   push:
-    branches-ignore:
+    branches:
       - "rc*"
     paths:
       - "customer/**"
       - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/customer-ci.yaml"
-      - "pom.xml"
-  pull_request:
-    branches: [ "main" ]
-    paths:
-      - "customer/**"
-      - ".github/workflows/actions/action.yaml"
-      - ".github/workflows/customer-ci.yaml"
+      - ".github/workflows/customer-ci-staging.yaml"
       - "pom.xml"
   workflow_dispatch:
 
@@ -32,13 +25,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set Docker Tags
+      - name: Set Docker Tag
         run: |
-          if [ "${{ github.ref_name }}" == "main" ]; then
-            echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-customer:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/yas-customer:latest" >> $GITHUB_ENV
-          else
-            echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-customer:${{ github.sha }}" >> $GITHUB_ENV
-          fi
+          echo "tags=${{ secrets.DOCKERHUB_USERNAME }}/yas-customer:${{ github.ref_name }}" >> $GITHUB_ENV
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
