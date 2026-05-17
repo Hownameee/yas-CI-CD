@@ -1,2 +1,7 @@
 **/Chart.lock
 **/charts/*.tgz
+
+# Exception: yas-umbrella needs lock & tarballs for ArgoCD
+!yas-umbrella/Chart.lock
+!yas-umbrella/charts/
+!yas-umbrella/charts/*.tgz

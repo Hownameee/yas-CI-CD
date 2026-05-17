@@ -1,97 +1,93 @@
-apiVersion: v2
-name: yas-umbrella
-description: Umbrella chart for YAS CI-CD containing data layer and app layer
-type: application
-version: 1.0.0
-appVersion: 1.0.0
 dependencies:
 - name: backoffice-bff
-  version: '*'
   repository: file://../backoffice-bff
+  version: 0.1.0
 - name: backoffice-ui
-  version: '*'
   repository: file://../backoffice-ui
+  version: 0.1.0
 - name: cart
-  version: '*'
   repository: file://../cart
+  version: 0.2.0
 - name: customer
-  version: '*'
   repository: file://../customer
+  version: 0.1.0
 - name: inventory
-  version: '*'
   repository: file://../inventory
+  version: 0.1.0
 - name: location
-  version: '*'
   repository: file://../location
+  version: 0.1.0
 - name: media
-  version: '*'
   repository: file://../media
+  version: 0.1.0
 - name: order
-  version: '*'
   repository: file://../order
+  version: 0.2.0
 - name: payment
-  version: '*'
   repository: file://../payment
+  version: 0.2.0
 - name: payment-paypal
-  version: '*'
   repository: file://../payment-paypal
+  version: 0.2.0
 - name: product
-  version: '*'
   repository: file://../product
+  version: 0.1.0
 - name: promotion
-  version: '*'
   repository: file://../promotion
+  version: 0.1.0
 - name: rating
-  version: '*'
   repository: file://../rating
+  version: 0.1.0
 - name: recommendation
-  version: '*'
   repository: file://../recommendation
+  version: 0.1.0
 - name: sampledata
-  version: '*'
   repository: file://../sampledata
+  version: 0.1.0
 - name: search
-  version: '*'
   repository: file://../search
+  version: 0.1.0
 - name: storefront-bff
-  version: '*'
   repository: file://../storefront-bff
+  version: 0.1.0
 - name: storefront-ui
-  version: '*'
   repository: file://../storefront-ui
+  version: 0.1.0
 - name: swagger-ui
-  version: '*'
   repository: file://../swagger-ui
+  version: 0.1.0
 - name: tax
-  version: '*'
   repository: file://../tax
+  version: 0.1.0
 - name: webhook
-  version: '*'
   repository: file://../webhook
+  version: 0.1.0
 - name: yas-configuration
-  version: '*'
   repository: file://../yas-configuration
+  version: 0.4.0
 - name: postgres
-  version: '*'
   repository: file://../postgresql
+  version: 0.1.0
 - name: pgadmin
-  version: '*'
   repository: file://../pgadmin
+  version: 0.1.0
 - name: zookeeper
-  version: '*'
   repository: file://../zookeeper
+  version: 0.1.0
 - name: kafka-cluster
-  version: '*'
   repository: file://../kafka-cluster
+  version: 0.1.0
 - name: elasticsearch-cluster
-  version: '*'
   repository: file://../elasticsearch-cluster
+  version: 0.1.0
 - name: keycloak
-  version: '*'
   repository: file://../keycloak
+  version: 0.1.0
 - name: akhq
-  version: 0.2.3
   repository: https://akhq.io/
+  version: 0.2.3
 - name: redis
-  version: 19.6.4
   repository: https://charts.bitnami.com/bitnami
+  version: 19.6.4
+digest: sha256:ad93e27377eaf0f2885620d938770e03a667603f7dd38e6695e645051b023a7c
+generated: "2026-05-17T17:03:55.986576248+07:00"
