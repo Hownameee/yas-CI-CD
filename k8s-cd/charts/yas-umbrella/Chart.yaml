@@ -69,7 +69,7 @@ dependencies:
   version: '*'
   repository: file://../keycloak
 - name: akhq
-  version: 0.2.3
+  version: 0.27.0
   repository: https://akhq.io/
 - name: redis
   version: 19.6.4
