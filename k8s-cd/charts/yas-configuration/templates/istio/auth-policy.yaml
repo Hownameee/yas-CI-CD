@@ -2,7 +2,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-backoffice-ui-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -13,13 +13,13 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-storefront-ui-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -30,13 +30,13 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-swagger-ui-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -52,7 +52,7 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-backoffice-bff-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -63,14 +63,14 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-ui
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-storefront-bff-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -81,14 +81,14 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-ui
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-product-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -99,20 +99,20 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
-              - cluster.local/ns/${NAMESPACE}/sa/cart
-              - cluster.local/ns/${NAMESPACE}/sa/inventory
-              - cluster.local/ns/${NAMESPACE}/sa/order
-              - cluster.local/ns/${NAMESPACE}/sa/sampledata
-              - cluster.local/ns/${NAMESPACE}/sa/search
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/cart
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/inventory
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/order
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/sampledata
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/search
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-media-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -123,18 +123,18 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
-              - cluster.local/ns/${NAMESPACE}/sa/cart
-              - cluster.local/ns/${NAMESPACE}/sa/product
-              - cluster.local/ns/${NAMESPACE}/sa/sampledata
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/cart
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/product
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/sampledata
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-cart-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -145,16 +145,16 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
-              - cluster.local/ns/${NAMESPACE}/sa/order
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/order
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-customer-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -165,16 +165,16 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
-              - cluster.local/ns/${NAMESPACE}/sa/order
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/order
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-order-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -185,15 +185,15 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-tax-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -204,16 +204,16 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
-              - cluster.local/ns/${NAMESPACE}/sa/order
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/order
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-search-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -224,15 +224,15 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-inventory-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -243,16 +243,16 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
-              - cluster.local/ns/${NAMESPACE}/sa/order
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/order
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-sampledata-callers
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -263,6 +263,6 @@ spec:
         - source:
             principals:
               - cluster.local/ns/ingress-nginx/sa/ingress-nginx
-              - cluster.local/ns/${NAMESPACE}/sa/backoffice-bff
-              - cluster.local/ns/${NAMESPACE}/sa/storefront-bff
-              - cluster.local/ns/${NAMESPACE}/sa/swagger-ui
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/backoffice-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/storefront-bff
+              - cluster.local/ns/{{ .Release.Namespace }}/sa/swagger-ui

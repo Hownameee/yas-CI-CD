@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yas-staging
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: 'https://github.com/Hownameee/yas-CI-CD.git'
+      targetRevision: main
+      path: k8s-cd/charts/yas-umbrella
+      helm:
+        valueFiles:
+          - $values/staging/values.yaml
+    - repoURL: 'https://github.com/Hownameee/yas-GitOps.git'
+      targetRevision: main
+      ref: values
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yas-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

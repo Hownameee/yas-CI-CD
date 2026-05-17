@@ -1,0 +1,9 @@
+server:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - argocd.yas.local.com
+  # Bỏ qua xác thực TLS nội bộ vì Ingress Controller sẽ lo TLS (hoặc chạy HTTP cục bộ)
+  extraArgs:
+    - --insecure

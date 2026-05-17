@@ -2,7 +2,7 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: default
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   mtls:
     mode: STRICT
@@ -12,7 +12,7 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: postgres-permissive
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -25,7 +25,7 @@ spec:
 # kind: PeerAuthentication
 # metadata:
 #   name: keycloak-permissive
-#   namespace: ${NAMESPACE}
+#   namespace: {{ .Release.Namespace }}
 # spec:
 #   selector:
 #     matchLabels:
@@ -38,7 +38,7 @@ spec:
 # kind: PeerAuthentication
 # metadata:
 #   name: media-permissive
-#   namespace: ${NAMESPACE}
+#   namespace: {{ .Release.Namespace }}
 # spec:
 #   selector:
 #     matchLabels:
@@ -51,7 +51,7 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: kafka-permissive
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -64,7 +64,7 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: kafka-connect-permissive
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
@@ -77,7 +77,7 @@ apiVersion: security.istio.io/v1beta1
 kind: PeerAuthentication
 metadata:
   name: zookeeper-permissive
-  namespace: ${NAMESPACE}
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:

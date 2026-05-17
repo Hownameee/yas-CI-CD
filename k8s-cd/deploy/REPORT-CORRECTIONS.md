@@ -4,7 +4,7 @@ File này ghi lại các phần cần sửa trong báo cáo để khớp với c
 
 ## Các điểm cần sửa
 
-1. **Application layer không còn deploy đầy đủ 19 service qua `04-deploy-apps.sh`.**
+1. **Application layer không còn deploy đầy đủ 19 service qua `save/deploy-apps.sh`.**
    Script hiện tại deploy:
    - `backoffice-bff`, `backoffice-ui`
    - `storefront-bff`, `storefront-ui`
@@ -37,7 +37,7 @@ File này ghi lại các phần cần sửa trong báo cáo để khớp với c
 
 ```md
 ### 4.4. Application layer (Phase 4)
-File `04-deploy-apps.sh` deploy các service cần thiết cho demo:
+File `save/deploy-apps.sh` deploy các service cần thiết cho demo:
 
 1. `yas-configuration` — chart tổng hợp ConfigMap/Secret + Stakater Reloader
 2. `backoffice-bff` + `backoffice-ui`

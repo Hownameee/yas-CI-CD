@@ -1,3 +1,4 @@
+{{ if .Values.global.observability.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
@@ -8,7 +9,7 @@ metadata:
 spec:
   namespaceSelector:
     matchNames:
-      - ${NAMESPACE}
+      - {{ .Release.Namespace }}
       - ingress-nginx
   selector:
     matchLabels:
@@ -37,3 +38,5 @@ spec:
     - port: http-monitoring
       path: /metrics
       interval: 15s
+
+{{ end }}

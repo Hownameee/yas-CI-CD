@@ -84,34 +84,24 @@ Project-02/
 ├── k8s-cd/
 │   ├── deploy/
 │   │   ├── 01-setup-operators.sh      # Cài operators và observability
-│   │   ├── 02-setup-service-mesh.sh   # Cài Istio, Kiali, mTLS, retry, auth policy
-│   │   ├── 03-setup-data-layer.sh     # Cài PostgreSQL, Kafka, Elastic, Redis, Keycloak
-│   │   ├── 04-deploy-apps.sh          # Deploy application layer
-│   │   ├── DeployCLI.md
+│   │   ├── 02-setup-service-mesh.sh   # Cài Istio Base, Kiali
+│   │   ├── 03-setup-argocd.sh         # Cài đặt ArgoCD
+│   │   ├── argo/                      # Cấu hình ArgoCD Application (App of Apps)
+│   │   │   ├── app-dev.yaml
+│   │   │   ├── app-staging.yaml
+│   │   │   └── gitops/                # Chứa values.yaml (sẽ move sang GitOps repo)
+│   │   ├── save/                      # Chứa các script deploy cũ
 │   │   ├── evidence/
 │   │   └── istio/
-│   │       ├── script/
-│   │       │   ├── generate-kiali-traffic.sh
-│   │       │   ├── service-mesh-evidence.sh
-│   │       │   ├── open-kiali.sh
-│   │       │   └── service-mesh-one-shot.sh
-│   │       ├── mtls.yaml
-│   │       ├── destination-rule.yaml
-│   │       ├── ingress-mtls.yaml
-│   │       ├── auth-policy.yaml
-│   │       ├── virtual-service-retry-template.yaml
-│   │       ├── keycloak-internal-dns.yaml
-│   │       └── telemetry-monitor.yaml
+│   │       └── script/
+│   │           ├── generate-kiali-traffic.sh
+│   │           ├── service-mesh-evidence.sh
+│   │           ├── open-kiali.sh
+│   │           └── service-mesh-one-shot.sh
 │   └── charts/
-│       ├── backend/
-│       ├── ui/
-│       ├── yas-configuration/
-│       ├── backoffice-bff/
-│       ├── backoffice-ui/
-│       ├── storefront-bff/
-│       ├── storefront-ui/
-│       ├── swagger-ui/
-│       └── cart/ customer/ inventory/ media/ order/ product/ search/ tax/ sampledata/
+│       ├── yas-umbrella/              # Master chart kết nối toàn bộ app và data layer
+│       ├── yas-configuration/         # Chứa cấu hình chung và Helm templates cho Istio (mTLS, AuthPolicy, v.v)
+│       └── backoffice-bff/ (và các service khác)
 ```
 
 ---
@@ -158,28 +148,14 @@ Các thành phần được cài:
 | Grafana Operator | `observability` |
 | Keycloak Operator | `keycloak` |
 
-### 4.3. Phase 3 - Data layer
+### 4.3. Phase 3 & 4 - GitOps Deployment (ArgoCD)
 
-Script:
+Thay vì chạy lệnh deploy thủ công bằng Bash Script cho Data Layer và App Layer, kiến trúc hiện tại đã được nâng cấp lên chuẩn GitOps sử dụng **ArgoCD** và mẫu **Umbrella Chart**.
 
-```bash
-k8s-cd/deploy/03-setup-data-layer.sh
-```
-
-Data layer được deploy vào namespace ứng dụng, ví dụ `yas-52`:
-
-- PostgreSQL và pgAdmin
-- Kafka cluster, Kafka Connect, Debezium connector, AKHQ
-- Elasticsearch và Kibana
-- Redis
-- Keycloak service và realm `Yas`
-
-### 4.4. Phase 4 - Application layer
-
-Script:
+Lệnh deploy qua ArgoCD:
 
 ```bash
-k8s-cd/deploy/04-deploy-apps.sh
+kubectl apply -f k8s-cd/deploy/argo/app-dev.yaml
 ```
 
 Các service đang deploy trong demo hiện tại:
@@ -625,14 +601,14 @@ minikube start --driver=docker --disk-size='80000mb' --memory='18g' --cpus='12' 
 minikube addons enable ingress
 
 cd k8s-cd/deploy
-export YAS_NAMESPACE="yas-52"
-export ENV_TAG="dev-52"
 export DISABLE_OBSERVABILITY="true"
 
 ./01-setup-operators.sh
 ./02-setup-service-mesh.sh
-./03-setup-data-layer.sh
-./04-deploy-apps.sh
+./03-setup-argocd.sh
+
+# Deploy ứng dụng và Data Layer thông qua ArgoCD
+kubectl apply -f argo/app-dev.yaml
 ```
 
 ### 9.2. Cập nhật `/etc/hosts`

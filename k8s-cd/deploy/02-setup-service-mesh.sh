@@ -2,10 +2,7 @@
 set -euo pipefail
 set -x
 
-NAMESPACE="${YAS_NAMESPACE:-yas}"
-
-echo ">>> Creating namespace $NAMESPACE (if not exists)..."
-kubectl create namespace "$NAMESPACE" || true
+# NAMESPACE is no longer needed here since ArgoCD manages it.
 
 echo ">>> Adding Istio Helm repository..."
 helm repo add istio https://istio-release.storage.googleapis.com/charts
@@ -29,41 +26,9 @@ helm upgrade --install kiali-server kiali/kiali-server \
   --wait
 fi
 
-echo ">>> Enabling automatic sidecar injection for namespace '$NAMESPACE'..."
-kubectl label namespace "$NAMESPACE" istio-injection=enabled --overwrite
-
 echo ">>> Injecting Istio sidecar into 'ingress-nginx' namespace (to support STRICT mTLS entry)..."
 kubectl label namespace ingress-nginx istio-injection=enabled --overwrite
 kubectl rollout restart deployment ingress-nginx-controller -n ingress-nginx
 
-echo ">>> Applying Istio configurations (mTLS, Destination Rules, Auth Policies) via Loop..."
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# Read configuration value from cluster-config.yaml file to construct hosts
-DOMAIN=$(yq -r '.domain' "$SCRIPT_DIR/cluster-config.yaml")
-NAMESPACE="${YAS_NAMESPACE:-yas}"
-if [ -n "${ENV_TAG:-}" ]; then
-  IDENTITY_HOST="identity-$ENV_TAG.$DOMAIN"
-else
-  IDENTITY_HOST="identity.$DOMAIN"
-fi
-
-export NAMESPACE DOMAIN IDENTITY_HOST
-
-if [ "${DISABLE_OBSERVABILITY:-false}" != "true" ]; then
-  ISTIO_CONFIGS=("ingress-mtls.yaml" "mtls.yaml" "destination-rule.yaml" "keycloak-internal-dns.yaml" "telemetry-monitor.yaml" "virtual-service-retry-template.yaml" "auth-policy.yaml")
-else
-  ISTIO_CONFIGS=("ingress-mtls.yaml" "mtls.yaml" "destination-rule.yaml" "keycloak-internal-dns.yaml" "virtual-service-retry-template.yaml" "auth-policy.yaml")
-fi
-
-for config in "${ISTIO_CONFIGS[@]}"; do
-    if [ -s "$SCRIPT_DIR/istio/$config" ]; then
-        echo ">>> Applying $config..."
-        envsubst < "$SCRIPT_DIR/istio/$config" | kubectl apply -f -
-    else
-        echo ">>> Skipping $config (empty or not found)."
-    fi
-done
-
-echo ">>> Xong Giai đoạn 2: Cài đặt Service Mesh (Istio), Kiali và áp dụng Policies."
-sleep 50
+echo ">>> Xong Giai đoạn 2: Cài đặt Service Mesh Operator (Istio, Kiali)."
+sleep 5

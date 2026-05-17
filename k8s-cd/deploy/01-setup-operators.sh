@@ -15,8 +15,6 @@ helm repo update
 read -rd '' DOMAIN GRAFANA_USERNAME GRAFANA_PASSWORD POSTGRESQL_USERNAME POSTGRESQL_PASSWORD \
 < <(yq -r '.domain, .grafana.username, .grafana.password, .postgresql.username, .postgresql.password' ./cluster-config.yaml)
 
-NAMESPACE="${YAS_NAMESPACE:-yas}"
-
 # Install cert manager
 helm upgrade --install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
