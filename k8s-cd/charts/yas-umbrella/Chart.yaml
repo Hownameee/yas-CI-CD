@@ -73,22 +73,22 @@ dependencies:
   repository: file://../yas-configuration
 - name: postgresql
   version: '*'
-  repository: file://../../deploy/postgres/postgresql
+  repository: file://../postgresql
 - name: pgadmin
   version: '*'
-  repository: file://../../deploy/postgres/pgadmin
+  repository: file://../pgadmin
 - name: zookeeper
   version: '*'
-  repository: file://../../deploy/zookeeper
+  repository: file://../zookeeper
 - name: kafka-cluster
   version: '*'
-  repository: file://../../deploy/kafka/kafka-cluster
+  repository: file://../kafka-cluster
 - name: elasticsearch-cluster
   version: '*'
-  repository: file://../../deploy/elasticsearch/elasticsearch-cluster
+  repository: file://../elasticsearch-cluster
 - name: keycloak
   version: '*'
-  repository: file://../../deploy/keycloak/keycloak
+  repository: file://../keycloak
 - name: akhq
   version: 0.2.3
   repository: https://akhq.io/
