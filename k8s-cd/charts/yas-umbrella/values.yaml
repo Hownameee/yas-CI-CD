@@ -20,6 +20,8 @@ redis:
 akhq:
   annotations:
     argocd.argoproj.io/sync-wave: "-20"
+  configmapAnnotations:
+    argocd.argoproj.io/sync-wave: "-20"
   service:
     annotations:
       argocd.argoproj.io/sync-wave: "-20"
