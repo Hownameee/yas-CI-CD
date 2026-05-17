@@ -87,13 +87,14 @@ Project-02/
 │   │   ├── 02-setup-service-mesh.sh   # Cài Istio, Kiali, mTLS, retry, auth policy
 │   │   ├── 03-setup-data-layer.sh     # Cài PostgreSQL, Kafka, Elastic, Redis, Keycloak
 │   │   ├── 04-deploy-apps.sh          # Deploy application layer
-│   │   ├── 05-generate-kiali-traffic.sh
-│   │   ├── 06-service-mesh-evidence.sh
-│   │   ├── 07-open-kiali.sh
-│   │   ├── 08-service-mesh-one-shot.sh
 │   │   ├── DeployCLI.md
 │   │   ├── evidence/
 │   │   └── istio/
+│   │       ├── script/
+│   │       │   ├── generate-kiali-traffic.sh
+│   │       │   ├── service-mesh-evidence.sh
+│   │       │   ├── open-kiali.sh
+│   │       │   └── service-mesh-one-shot.sh
 │   │       ├── mtls.yaml
 │   │       ├── destination-rule.yaml
 │   │       ├── ingress-mtls.yaml
@@ -440,7 +441,7 @@ Mở Kiali:
 
 ```bash
 cd k8s-cd/deploy
-./07-open-kiali.sh
+./istio/script/open-kiali.sh
 ```
 
 Sau đó truy cập:
@@ -461,13 +462,13 @@ Display: Traffic, Security
 Tạo traffic thường:
 
 ```bash
-YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./05-generate-kiali-traffic.sh
+YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./istio/script/generate-kiali-traffic.sh
 ```
 
 Tạo traffic cho test Service Mesh:
 
 ```bash
-YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./08-service-mesh-one-shot.sh
+YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./istio/script/service-mesh-one-shot.sh
 ```
 
 Các flow kỳ vọng trên Kiali:
@@ -529,7 +530,7 @@ spec:
 
 Lưu ý quan trọng: retry là hành vi của **caller sidecar**. Vì vậy evidence đúng phải lấy từ pod caller, không phải từ sidecar của service đích.
 
-Để chứng minh retry, project dùng script `08-service-mesh-one-shot.sh`. Script tạo service demo `retry-flaky`, service này cố ý trả:
+Để chứng minh retry, project dùng script `istio/script/service-mesh-one-shot.sh`. Script tạo service demo `retry-flaky`, service này cố ý trả:
 
 ```text
 500, 500, 200
@@ -658,7 +659,7 @@ Ví dụ IP là `192.168.49.2`, thêm vào `/etc/hosts`:
 
 ```bash
 cd k8s-cd/deploy
-./07-open-kiali.sh
+./istio/script/open-kiali.sh
 ```
 
 Truy cập:
@@ -672,13 +673,13 @@ http://localhost:20001/kiali
 Traffic cho app:
 
 ```bash
-YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./05-generate-kiali-traffic.sh
+YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./istio/script/generate-kiali-traffic.sh
 ```
 
 Traffic và evidence cho Service Mesh:
 
 ```bash
-YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./08-service-mesh-one-shot.sh
+YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./istio/script/service-mesh-one-shot.sh
 ```
 
 ---
@@ -715,7 +716,7 @@ Chạy:
 
 ```bash
 cd k8s-cd/deploy
-YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./08-service-mesh-one-shot.sh
+YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./istio/script/service-mesh-one-shot.sh
 cat evidence/auth-policy-test-3.txt
 ```
 
@@ -759,7 +760,7 @@ Kỳ vọng:
 
 ### 10.5. Kiểm tra Kiali
 
-Sau khi chạy `08-service-mesh-one-shot.sh`, vào Kiali:
+Sau khi chạy `istio/script/service-mesh-one-shot.sh`, vào Kiali:
 
 ```text
 Namespace: yas-52
@@ -810,7 +811,7 @@ http://storefront-dev-52.yas.local.com
 |---|---|---|---|
 | 1 | Enable mTLS giữa các service | Hoàn thành | `mtls.yaml`, `destination-rule.yaml` |
 | 2 | Vẽ topology bằng Kiali | Hoàn thành | Kiali + `telemetry-monitor.yaml` + script traffic |
-| 3.a | Retry khi service trả 500 | Hoàn thành | `virtual-service-retry-template.yaml`, `08-service-mesh-one-shot.sh` |
+| 3.a | Retry khi service trả 500 | Hoàn thành | `virtual-service-retry-template.yaml`, `istio/script/service-mesh-one-shot.sh` |
 | 3.b | AuthorizationPolicy giới hạn service-to-service | Hoàn thành | `auth-policy.yaml` |
 | 3.c | Test bằng curl từ pod trong cluster | Hoàn thành | Evidence trong `k8s-cd/deploy/evidence/` |
 
@@ -839,7 +840,7 @@ Nếu muốn ít hơn nữa, có thể bỏ ảnh `05-jenkins-destroy.png` khi g
 
 ```bash
 cd k8s-cd/deploy
-YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./08-service-mesh-one-shot.sh
+YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./istio/script/service-mesh-one-shot.sh
 
 kubectl get peerauthentication,destinationrule,virtualservice,authorizationpolicy -n yas-52
 kubectl get peerauthentication -n yas-52 -o yaml

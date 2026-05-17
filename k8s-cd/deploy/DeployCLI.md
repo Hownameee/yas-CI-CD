@@ -35,7 +35,7 @@ Các manifest mTLS, retry, authorization policy và Prometheus monitor cho Kiali
 Mở Kiali:
 
 ```bash
-./07-open-kiali.sh
+./istio/script/open-kiali.sh
 ```
 
 Sau đó mở:
@@ -56,7 +56,7 @@ Display: Traffic, Security
 Tạo traffic để Kiali hiện topology:
 
 ```bash
-./05-generate-kiali-traffic.sh
+./istio/script/generate-kiali-traffic.sh
 ```
 
 Script này mặc định dùng:
@@ -71,7 +71,7 @@ SLEEP_SECONDS=1
 Nếu cần đổi:
 
 ```bash
-YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./05-generate-kiali-traffic.sh
+YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./istio/script/generate-kiali-traffic.sh
 ```
 
 ## 3. Evidence cho yêu cầu Service Mesh
@@ -79,13 +79,13 @@ YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./05-generate-kiali
 Chạy script này để tạo pod test, bắn traffic và ghi log evidence:
 
 ```bash
-./06-service-mesh-evidence.sh
+./istio/script/service-mesh-evidence.sh
 ```
 
 Hoặc dùng lệnh one-shot đầy đủ hơn, gồm cả retry thành công và retry thất bại:
 
 ```bash
-./08-service-mesh-one-shot.sh
+./istio/script/service-mesh-one-shot.sh
 ```
 
 Lệnh one-shot sẽ tạo thêm service demo tạm:

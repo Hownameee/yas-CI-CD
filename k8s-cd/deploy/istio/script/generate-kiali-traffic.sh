@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOMAIN="${DOMAIN:-$(yq -r '.domain' "$SCRIPT_DIR/cluster-config.yaml")}"
+DOMAIN="${DOMAIN:-$(yq -r '.domain' "$SCRIPT_DIR/../../cluster-config.yaml")}"
 ENV_TAG="${ENV_TAG:-dev-52}"
 NAMESPACE="${YAS_NAMESPACE:-yas-52}"
 MINIKUBE_IP="${MINIKUBE_IP:-$(minikube ip)}"

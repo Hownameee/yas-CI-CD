@@ -62,7 +62,7 @@ Mở Kiali:
 
 ```bash
 cd k8s-cd/deploy
-./07-open-kiali.sh
+./istio/script/open-kiali.sh
 ```
 
 Truy cập:
@@ -74,13 +74,13 @@ http://localhost:20001/kiali
 Tạo traffic:
 
 ```bash
-YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./05-generate-kiali-traffic.sh
+YAS_NAMESPACE=yas-52 ENV_TAG=dev-52 COUNT=60 SLEEP_SECONDS=1 ./istio/script/generate-kiali-traffic.sh
 ```
 
 Hoặc chạy một lệnh evidence đầy đủ cho AuthorizationPolicy và Retry:
 
 ```bash
-YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./08-service-mesh-one-shot.sh
+YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./istio/script/service-mesh-one-shot.sh
 ```
 
 Trong Kiali chọn:
@@ -138,7 +138,7 @@ Lưu ý: retry được thực hiện ở **caller sidecar**, không phải ở 
 Project có script:
 
 ```bash
-YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./08-service-mesh-one-shot.sh
+YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./istio/script/service-mesh-one-shot.sh
 ```
 
 Script tạo `retry-flaky` tạm thời. Service này cố ý trả `500, 500, 200`; khi gọi qua VirtualService retry, client nhận `200`, chứng minh retry policy hoạt động.
@@ -160,7 +160,7 @@ Chạy một lệnh để tạo pod test, gọi service, tạo traffic cho Kiali
 
 ```bash
 cd k8s-cd/deploy
-YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./08-service-mesh-one-shot.sh
+YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./istio/script/service-mesh-one-shot.sh
 ```
 
 Script tạo các pod tạm:
@@ -212,7 +212,7 @@ k8s-cd/deploy/evidence/retry-success-evidence.txt
 
 ```bash
 cd k8s-cd/deploy
-YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./08-service-mesh-one-shot.sh
+YAS_NAMESPACE=yas-52 POD_TTL_SECONDS=600 ./istio/script/service-mesh-one-shot.sh
 
 kubectl get peerauthentication,destinationrule,virtualservice,authorizationpolicy -n yas-52
 kubectl get peerauthentication -n yas-52 -o yaml
