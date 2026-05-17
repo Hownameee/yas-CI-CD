@@ -17,6 +17,7 @@ helm upgrade --install istio-base istio/base -n istio-system --create-namespace 
 echo ">>> Installing Istiod..."
 helm upgrade --install istiod istio/istiod -n istio-system --wait
 
+if [ "${DISABLE_OBSERVABILITY:-false}" != "true" ]; then
 echo ">>> Installing Kiali Server for Topology visualization..."
 helm repo add kiali https://kiali.org/helm-charts
 helm repo update
@@ -26,6 +27,7 @@ helm upgrade --install kiali-server kiali/kiali-server \
   --set auth.strategy="anonymous" \
   --set external_services.prometheus.url="http://prometheus-kube-prometheus-prometheus.observability.svc.cluster.local:9090" \
   --wait
+fi
 
 echo ">>> Enabling automatic sidecar injection for namespace '$NAMESPACE'..."
 kubectl label namespace "$NAMESPACE" istio-injection=enabled --overwrite
@@ -48,7 +50,11 @@ fi
 
 export NAMESPACE DOMAIN IDENTITY_HOST
 
-ISTIO_CONFIGS=("ingress-mtls.yaml" "mtls.yaml" "destination-rule.yaml" "keycloak-internal-dns.yaml" "telemetry-monitor.yaml" "virtual-service-retry-template.yaml" "auth-policy.yaml")
+if [ "${DISABLE_OBSERVABILITY:-false}" != "true" ]; then
+  ISTIO_CONFIGS=("ingress-mtls.yaml" "mtls.yaml" "destination-rule.yaml" "keycloak-internal-dns.yaml" "telemetry-monitor.yaml" "virtual-service-retry-template.yaml" "auth-policy.yaml")
+else
+  ISTIO_CONFIGS=("ingress-mtls.yaml" "mtls.yaml" "destination-rule.yaml" "keycloak-internal-dns.yaml" "virtual-service-retry-template.yaml" "auth-policy.yaml")
+fi
 
 for config in "${ISTIO_CONFIGS[@]}"; do
     if [ -s "$SCRIPT_DIR/istio/$config" ]; then

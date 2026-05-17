@@ -627,6 +627,7 @@ minikube addons enable ingress
 cd k8s-cd/deploy
 export YAS_NAMESPACE="yas-52"
 export ENV_TAG="dev-52"
+export DISABLE_OBSERVABILITY="true"
 
 ./01-setup-operators.sh
 ./02-setup-service-mesh.sh
