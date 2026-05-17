@@ -3,6 +3,7 @@ kind: KafkaConnect
 metadata:
   name: debezium-connect-cluster
   annotations:
+    argocd.argoproj.io/sync-wave: "-20"
     strimzi.io/use-connector-resources: "true"
 spec:
   replicas: 1

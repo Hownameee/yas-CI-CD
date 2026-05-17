@@ -5,6 +5,7 @@ metadata:
   labels:
     {{- include "keycloak.labels" . | nindent 4 }}
   annotations:
+    argocd.argoproj.io/sync-wave: "-20"
     nginx.ingress.kubernetes.io/service-upstream: "true"
     nginx.ingress.kubernetes.io/upstream-vhost: "keycloak-service.{{ .Release.Namespace }}.svc.cluster.local"
 spec:

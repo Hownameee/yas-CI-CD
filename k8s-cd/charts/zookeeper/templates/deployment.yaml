@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "zookeeper.fullname" . }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"
   labels:
     {{- include "zookeeper.labels" . | nindent 4 }}
 spec:

@@ -2,6 +2,8 @@ apiVersion: k8s.keycloak.org/v2alpha1
 kind: Keycloak
 metadata:
   name: keycloak
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"
 spec:
   bootstrapAdmin:
     user:

@@ -3,6 +3,8 @@ apiVersion: "acid.zalan.do/v1"
 
 metadata:
   name: "postgresql"
+  annotations:
+    argocd.argoproj.io/sync-wave: "-30"
   labels:
     team: acid
 

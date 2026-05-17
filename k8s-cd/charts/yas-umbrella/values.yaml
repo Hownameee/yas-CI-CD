@@ -7,6 +7,8 @@
 # "manifest unknown" on Docker Hub. Keep the chart version but pull the same
 # image tag from the legacy repository.
 redis:
+  commonAnnotations:
+    argocd.argoproj.io/sync-wave: "-20"
   image:
     repository: bitnamilegacy/redis
     tag: 7.2.5-debian-12-r4
@@ -14,3 +16,13 @@ redis:
     image:
       repository: bitnamilegacy/redis-sentinel
       tag: 7.2.5-debian-12-r4
+
+akhq:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"
+  service:
+    annotations:
+      argocd.argoproj.io/sync-wave: "-20"
+  ingress:
+    annotations:
+      argocd.argoproj.io/sync-wave: "-20"

@@ -7,3 +7,15 @@ server:
   # Bỏ qua xác thực TLS nội bộ vì Ingress Controller sẽ lo TLS (hoặc chạy HTTP cục bộ)
   extraArgs:
     - --insecure
+
+configs:
+  params:
+    # Repo yas-CI-CD contains the full source tree, so the initial ArgoCD
+    # fetch can take longer than the default 90s on Minikube/network-limited labs.
+    controller.repo.server.timeout.seconds: "300"
+    reposerver.git.request.timeout: "300s"
+
+repoServer:
+  env:
+    - name: ARGOCD_EXEC_TIMEOUT
+      value: "300s"

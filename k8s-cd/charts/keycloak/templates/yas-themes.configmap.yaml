@@ -2,6 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: yas-themes-configmap
+  annotations:
+    argocd.argoproj.io/sync-wave: "-20"
 binaryData:
   yas.jar: |
     {{- .Files.Get "themes/yas.jar" | b64enc | nindent 4 }}
