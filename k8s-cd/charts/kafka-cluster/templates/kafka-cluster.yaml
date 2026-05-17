@@ -16,10 +16,12 @@ spec:
         tls: true
         authentication:
           type: tls
+{{- if .Values.kafka.external.enabled }}
       - name: external
         port: 9094
         type: nodeport
         tls: false
+{{- end }}
     storage:
       type: jbod
       volumes:

@@ -20,33 +20,15 @@ dependencies:
 - name: inventory
   version: '*'
   repository: file://../inventory
-- name: location
-  version: '*'
-  repository: file://../location
 - name: media
   version: '*'
   repository: file://../media
 - name: order
   version: '*'
   repository: file://../order
-- name: payment
-  version: '*'
-  repository: file://../payment
-- name: payment-paypal
-  version: '*'
-  repository: file://../payment-paypal
 - name: product
   version: '*'
   repository: file://../product
-- name: promotion
-  version: '*'
-  repository: file://../promotion
-- name: rating
-  version: '*'
-  repository: file://../rating
-- name: recommendation
-  version: '*'
-  repository: file://../recommendation
 - name: sampledata
   version: '*'
   repository: file://../sampledata
@@ -65,9 +47,6 @@ dependencies:
 - name: tax
   version: '*'
   repository: file://../tax
-- name: webhook
-  version: '*'
-  repository: file://../webhook
 - name: yas-configuration
   version: '*'
   repository: file://../yas-configuration

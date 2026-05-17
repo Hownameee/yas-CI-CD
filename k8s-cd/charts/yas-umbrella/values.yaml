@@ -1,2 +1,16 @@
 # Default values for yas-umbrella
 # All actual configurations should be provided via GitOps values files
+
+# Bitnami moved many historical Debian-based images from docker.io/bitnami to
+# docker.io/bitnamilegacy. The redis chart version locked by this project
+# defaults to bitnami/redis:7.2.5-debian-12-r4, which now fails with
+# "manifest unknown" on Docker Hub. Keep the chart version but pull the same
+# image tag from the legacy repository.
+redis:
+  image:
+    repository: bitnamilegacy/redis
+    tag: 7.2.5-debian-12-r4
+  sentinel:
+    image:
+      repository: bitnamilegacy/redis-sentinel
+      tag: 7.2.5-debian-12-r4

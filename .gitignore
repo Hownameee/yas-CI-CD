@@ -20,6 +20,10 @@
 *.rar
 target
 
+# Helm dependency build output. ArgoCD/Helm should rebuild these from Chart.yaml.
+k8s-cd/charts/yas-umbrella/Chart.lock
+k8s-cd/charts/yas-umbrella/charts/*.tgz
+
 ### IntelliJ IDEA ###
 .idea
 

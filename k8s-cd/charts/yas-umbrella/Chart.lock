@@ -14,32 +14,14 @@ dependencies:
 - name: inventory
   repository: file://../inventory
   version: 0.1.0
-- name: location
-  repository: file://../location
-  version: 0.1.0
 - name: media
   repository: file://../media
   version: 0.1.0
 - name: order
   repository: file://../order
   version: 0.2.0
-- name: payment
-  repository: file://../payment
-  version: 0.2.0
-- name: payment-paypal
-  repository: file://../payment-paypal
-  version: 0.2.0
 - name: product
   repository: file://../product
-  version: 0.1.0
-- name: promotion
-  repository: file://../promotion
-  version: 0.1.0
-- name: rating
-  repository: file://../rating
-  version: 0.1.0
-- name: recommendation
-  repository: file://../recommendation
   version: 0.1.0
 - name: sampledata
   repository: file://../sampledata
@@ -58,9 +40,6 @@ dependencies:
   version: 0.1.0
 - name: tax
   repository: file://../tax
-  version: 0.1.0
-- name: webhook
-  repository: file://../webhook
   version: 0.1.0
 - name: yas-configuration
   repository: file://../yas-configuration
@@ -89,5 +68,5 @@ dependencies:
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 19.6.4
-digest: sha256:ad93e27377eaf0f2885620d938770e03a667603f7dd38e6695e645051b023a7c
-generated: "2026-05-17T17:14:29.008954951+07:00"
+digest: sha256:86c937b302df23318fe96477928506c95875d2c463b7718f069b01614e17c08b
+generated: "2026-05-17T18:02:36.677484296+07:00"

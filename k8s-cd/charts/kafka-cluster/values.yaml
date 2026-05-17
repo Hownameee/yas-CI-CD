@@ -1,5 +1,7 @@
 kafka:
   replicas: 1
+  external:
+    enabled: false
 zookeeper:
   replicas: 1
   storeSize: 5Gi
